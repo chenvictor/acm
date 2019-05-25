@@ -8,9 +8,17 @@ const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f
 #define ff first
 #define ss second
 
+// Digit utils
+// Iterate over digits of a number
+#define for_digits(d, number) for (ll _=(number); _; ) for (int d = _%10; _; d=(_/=10)%10)
+// b^e % mod
+ll modpow(ll b, int e, int mod) { ll res = 1; for (; e>0; e>>=1, b=b*b%mod) { if (e&1) res = res*b % mod; } return res; }
+// nCr
+ll nCr(ll n, ll r) { if (r>n) return 0; if (r<<1>n) r=n-r; if (!r) return 1; ll res=n; for (int i = 2; i <= r; ++i) { res = res * (n-i+1) / i; } return res; }
+template <typename T>
+
+
 int main() {
-  ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-  // Emily <3  
   
   return 0;
 }
