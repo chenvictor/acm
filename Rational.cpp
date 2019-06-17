@@ -1,13 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-#define CM ,
-#define TD(a,b) typedef a b
-#define forx(i,n) for(int i = 0; i < (n); ++i)
-TD(long long,ll); TD(long double,ld); TD(pair<int CM int>,pii); TD(pair<ll CM ll>,pll); TD(vector<int>,VI); TD(vector<bool>,VB); TD(vector<ll>, VL);
-const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f3f3f; const ld EPS = 1e-9; const ld PI = acos(-1);
-#define ff first
-#define ss second
-
 class Rational {
 	ll n, d; void reduce() { ll gcd = __gcd(n, d); n /= gcd; d /= gcd; } public:
 	Rational(ll num=0, ll den=1, bool reduced=false) : n(num), d(den) { if (!reduced) reduce(); }
@@ -30,15 +20,3 @@ class Rational {
   _(*, Rational, *=); _(/, Rational, /=); _(+, Rational, +=); _(-, Rational, -=); _(*, ll, *=); _(/, ll, /=); _(+, ll, +=); _(-, ll, -=);
 #undef _
 };
-
-int main() {
-	// Testing
-	cout << setprecision(6) << fixed;
-	Rational t1(6,2);
-  Rational t2(5,6);
-  t2 -= 3;
-  cout << t2 << nl;
-  t2 += Rational(3,2);
-  cout << t2 << nl;
-	return 0;
-}

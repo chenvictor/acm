@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-using namespace std;
+using namespace std; inline void fileio(const char* in, const char* out) { freopen(in, "r", stdin); freopen(out, "w", stdout); } 
 #define CM ,
 #define TD(a,b) typedef a b
 #define forx(i,n) for(int i = 0; i < (n); ++i)
@@ -12,5 +12,7 @@ int main() {
   ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
   // Emily <3  
   
+  
+  cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl;
   return 0;
 }

@@ -13,16 +13,13 @@ void _assertEquals(T expected, T actual, int line) {
 }
 #define assertEquals(expected, actual) _assertEquals(expected, actual, __LINE__)
 
-template <typename T>
-
-class Segtree {
-	int n; vector<T> data; T (*merge)(T,T);
-	// Merge function can be non-commutative.
+template <typename T> class Segtree {
+	int n; vector<T> data; function<T(T,T)> merge;
 	void build() { for (int i = n - 1; i > 0; --i) data[i] = merge(data[i<<1], data[i<<1|1]); }
 	public:
-		Segtree(int n, T (*f)(T,T)) : n(n), data(2*n), merge(f) { build(); }
-		Segtree(int n, T val, T (*f)(T,T)) : n(n), data(2*n, val), merge(f) { build(); }
-		Segtree(vector<T>& init, T (*f)(T,T)) : n(init.size), data(2*n), merge(f) {
+		Segtree(int n, function<T(T,T)> f) : n(n), data(2*n), merge(f) { build(); }
+		Segtree(int n, T val, function<T(T,T)> f) : n(n), data(2*n, val), merge(f) { build(); }
+		Segtree(vector<T>& init, function<T(T,T)> f) : n(init.size), data(2*n), merge(f) {
 			copy(init.begin(), init.end(), data.begin() + n); build();
 		}
 		T get(int idx) { return data[n+idx]; }

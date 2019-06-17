@@ -42,3 +42,13 @@ class Miniball {
 		ndpt getCenter() { return c_c; }
 		ld getRadius2() { return c_r2; }
 };
+typedef vector<ld> ndpt;
+pair<npdt, ld> miniball_center(int D, vector<ndpt>& points) {
+  int m = 0;
+  vector<ndpt> v(D+1, npdt(D)), a(D+1, ndpt(D)), c(D+1, ndpt(D,0));
+  ndpt q0(D), r2(D+1), z(D+1), f(D+1), c_c(c[0]);
+  auto end = L.begin();
+  ld c_r2(-1.L);
+  function
+  return make_pair(c_c, c_r2);
+}
