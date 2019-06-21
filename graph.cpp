@@ -38,7 +38,7 @@ struct Graph {
 private: VE edge_list; vector<VI> adj_list; const int dimens; }; typedef Graph::Edge Edge;
 
 // g      -> the graph
-// SCC[u] <- the scc node u belongs to in reverse topo order (0,1,...num-1)
+// SCC[u] <- the scc node u belongs to in reverse topo order [0,1,...num)
 // num    <- the number of SCCs
 void getSCC(Graph& g, VI& SCC, int& num) {
   VI low(g.N()), vis(g.N()); SCC.assign(g.N(), -1); stack<int> verts; int time = num = 0;
@@ -55,10 +55,7 @@ int tree_diameter(Graph& g, int i = 0) {
   // ff is the diameter so far (which could be the branch)
   // ss is the longest branch
   function<pii(int,int)> helper = [&](int u, int p) {
-    //check leaf
-    if (g.isLeaf(u,p)) {
-      return make_pair(0,0);
-    }
+    if (g.isLeaf(u,p)) return make_pair(0,0);
     int diam = 0; // biggest diameter so far
     int best = 0; // biggest branch so far
     for (int v : g.getAdjNode(u)) {
