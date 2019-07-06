@@ -16,7 +16,7 @@ int main() {
 	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 	// Emily <3	
 	int T; cin >> T;
-	fori(T) deal(i);
+	forx(i,T) deal(i);
   cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl;
 	return 0;
 }

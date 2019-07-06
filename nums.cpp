@@ -1,16 +1,5 @@
-#include <bits/stdc++.h>
-using namespace std;
-#define CM ,
-#define TD(a,b) typedef a b
-#define forx(i,n) for(int i = 0; i < n; ++i)
-TD(long long,ll); TD(long double,ld); TD(pair<int CM int>,pii); TD(pair<ll CM ll>,pll); TD(vector<int>,VI); TD(vector<bool>,VB); TD(vector<ll>, VL);
-const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f3f3f; const ld EPS = 1e-9; const ld PI = acos(-1);
-#define ff first
-#define ss second
-
-// Digit utils
-// Iterate over digits of a number
 namespace Nums {
+// iterate over digits of a number, from right to left
   #define for_digits(d, number) for (ll _=(number); _; ) for (int d = _%10; _; d=(_/=10)%10)
 // b^e % mod
   ll modpow(ll b, int e, int mod) { ll res = 1; for (; e>0; e>>=1, b=b*b%mod) { if (e&1) res = res*b % mod; } return res; }
@@ -24,20 +13,18 @@ namespace Nums {
       res = res * (n-i+1) / i;
     } return res;
   }
-// ax+ by = gcd(a,b)
+// solves: ax + by = gcd(a,b)
+// return: { gcd, x, y };
+// source: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
   template <typename T>
-  T egcd(T a, T b, T& x, T& y) {
-    if (!a) { x=0, y=1; return b; }
-    T tx, ty, t = egcd(b%a, a, tx, ty);
-    x = ty - (b/a) * tx; y = tx;
-    return t;
+  vector<T> egcd(T a, T b) {
+    vector<T> ans = {b, 0, 1}; int x_ = 1, y_ = 0;
+    while (a != 0) {
+      b = ans[0] / a;
+      swap(ans[0], a); a %= ans[0];
+      swap(ans[2], y_); y_ -= b * ans[2];
+      swap(ans[1], x_); x_ -= b * ans[1];
+    }
+    return ans;
   }
-};
-
-
-int main() {
-  int x, y;
-  cout << egcd(150,90,x, y) << nl;
-  cout << x << " " << y << nl;
-  return 0;
 }
