@@ -17,14 +17,16 @@ namespace Nums {
 // return: { gcd, x, y };
 // source: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
   template <typename T>
-  vector<T> egcd(T a, T b) {
-    vector<T> ans = {b, 0, 1}; int x_ = 1, y_ = 0;
-    while (a != 0) {
-      b = ans[0] / a;
-      swap(ans[0], a); a %= ans[0];
-      swap(ans[2], y_); y_ -= b * ans[2];
-      swap(ans[1], x_); x_ -= b * ans[1];
+  tuple<T,T,T> egcd(T a, T b) {
+    T gcd = b, x = 0, y = 1, x_ = 1, y_ = 0;
+    while (a) {
+      b = gcd / a;
+      swap(gcd, a); a %= gcd;
+      swap(y, y_); y_ -= b * y;
+      swap(x, x_); x_ -= b * x;
     }
-    return ans;
+    return {gcd, x, y};
   }
+// chinese remainder theorem
+  
 }

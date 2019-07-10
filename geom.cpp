@@ -8,6 +8,13 @@ const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f
 #define ff first
 #define ss second
 
+// Max area quadrilateral OR area of triangle (d=0)
+// source: https://en.wikipedia.org/wiki/Heron's_formula
+// source: https://en.wikipedia.org/wiki/Bretschneider's_formula
+ld maxAreaQuad(ld a, ld b, ld c, ld d=0) {
+  ld s = (a+b+c+d)/2; return sqrt((s-a)*(s-b)*(s-c)*(s-d));
+}
+
 template <typename T>
 class Point {
   static complex<T> b1, b2;

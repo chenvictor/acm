@@ -1,7 +1,7 @@
 namespace DateTime {
-  static const int D = 365;
-  static const int mSize[12] =   { 31, 28, 31, 30,  31,  30,  31,  31,  30,  31,  30,  31 };
-  static const int mPrefix[13] = {  0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
+  const int D = 365;
+  const int mSize[12] =   { 31, 28, 31, 30,  31,  30,  31,  31,  30,  31,  30,  31 };
+  const int mPrefix[13] = {  0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
   class Date {
     // No leap years, months and dates are 1 based
     int m, d; void parseInt(int i) { assert(0 <= i && i < D); for(m=0; i >= mPrefix[m]; ++m); d = i - mPrefix[m-1] + 1; }
@@ -27,4 +27,10 @@ namespace DateTime {
     Date  operator+(int offset) { Date cpy = *this; return cpy += offset; }
     Date  operator-(int offset) { Date cpy = *this; return cpy -= offset; }
   };
+  const map<string, int> dayIndex = { {"Monday", 0}, {"Tuesday", 1}, {"Wednesday", 2}, {"Thursday", 3}, {"Friday", 4}, {"Saturday", 5}, {"Sunday", 6} };
+  const string dayString[] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+  // Returns the index of a weekday, 0 = Monday, 1 = Tuesday, ... 6 = Sunday
+  int dayToIndex(string& s) { auto it = dayIndex.find(s); assert(it != dayIndex.end()); return it->ss; }
+  string indexToDay(int idx) { assert(0 <= idx && idx < 7); return dayString[idx]; }
 } using namespace DateTime;
+
