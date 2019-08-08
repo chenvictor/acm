@@ -7,15 +7,26 @@ const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f
 #define ff first
 #define ss second
 
-void deal(int T) {
-
-}
+class SXArray {
+  public:
+    SXArray(string& s) {
+      cerr << "TODO" << nl;
+    }
+    //starting index (in s) of the ith lexographically smallest suffix
+    int ith_suffix(int i) {
+      return -1;
+    }
+    //the sorted order of the suffix starting at index idx
+    int order(int idx) {
+      return -1;
+    }
+};
 
 int main() {
   atexit([](){ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
-	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-	// Emily <3
-	int T; cin >> T;
-	forx(i,T) deal(i);
-	return 0;
+  ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+  // Emily <3
+  
+  
+  return 0;
 }

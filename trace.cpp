@@ -1,5 +1,4 @@
-#define DEBUG 1
-#if     DEBUG
+#ifndef NDEBUG
 #define trace(var)  {cerr << "Line " << __LINE__ << ": " << #var << "=" << (var) << nl;}
 #else
 #define trace(var)	{}

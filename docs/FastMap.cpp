@@ -11,5 +11,5 @@ template <class K, class V, class Hash=hash<K>>
 using FastMap = __gnu_pbds::gp_hash_table<K,V,chash<K,Hash>>;
 // some hash functions
 namespace Hashes {
-  struct pii { size_t operator()(pii key) const { return ((size_t)key.ff << 32) | key.ss; } };
+  struct hash_pii { size_t operator()(pii key) const { return ((size_t)key.ff << 32) | key.ss; } };
 }

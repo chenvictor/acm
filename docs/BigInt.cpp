@@ -8,15 +8,8 @@ const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f
 #define ff first
 #define ss second
 
-//#define NDEBUG
-#ifndef NDEBUG
-#define trace(var)  {cerr << "Line " << __LINE__ << ": " << #var << "=" << (var) << nl;}
-#else
-#define trace(var)	{ }
-#endif
-
 class BigInt {
-  // BigInt is stored as a vector of unsigned long long, along with a sign bit (char)
+  // BigInt is stored as a vector of unsigned int, along with a sign bit (int)
   typedef unsigned int uint; typedef unsigned long long ull;
   static const int I_SIZE = 8*sizeof(uint); int sgn; vector<uint> mag;
   uint& operator[] (int i) { if (i >= size()) mag.resize(i+1, 0); return mag[i]; } uint operator[] (int i) const { return (i < mag.size()) ? mag[i] : 0; }
