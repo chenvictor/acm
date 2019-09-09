@@ -7,13 +7,10 @@ class ModInt {
     ModInt& operator += (const ModInt& b) { if ((val += b.val) >= MOD) val -= MOD; return *this; }
     ModInt& operator -= (const ModInt& b) { if ((val -= b.val) < 0) val += MOD; return *this; }
     ModInt& operator *= (const ModInt& b) { val = ((ll)val*(ll)b.val) % MOD; return *this; }
-    ModInt& operator /= (const ModInt& b) {
-      return (*this) *= modInverse(b.val);
-      //if (((val *= modInverse(b.val)) %= MOD) < 0) val += MOD; return *this;
-    }
+    ModInt& operator /= (const ModInt& b) { return (*this) *= modInverse(b.val); }
 #define _op(op, btype, op2) ModInt operator op (btype b) const { ModInt ans = *this; return ans op2 b; }
     _op(+, const ModInt&, +=); _op(-, const ModInt&, -=); _op(*, const ModInt&, *=); _op(/, const ModInt&, /=);
     _op(+, int, +=); _op(-, int, -=); _op(*, int, *=); _op(/, int, /=);
 #undef _op
-    operator int() const { assert(0 <= val && val < MOD); return val; }
+    int toInt() const { assert(0 <= val && val < MOD); return val; }
 };
