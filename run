@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+import argparse
+import os.path
+import subprocess
+import sys
+import time
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def logv(string = '', color = bcolors.OKGREEN):
+    if (not args.quiet):
+        log(string, color)
+
+def log(string = '', color = bcolors.OKGREEN):
+    if (not args.mute):
+        print(bcolors.BOLD + color + string + bcolors.ENDC, file=sys.stderr)
+
+class FileType:
+    def __init__(self, fname, fext):
+        self.fpath = fname + fext
+        self.fname = fname
+        self.fext = fext
+
+    def execfname(self):
+        return self.fname
+
+    def srcfname(self):
+        return self.fpath
+
+    def compile(self):
+        return None
+
+    def execute(self):
+        raise 'Stub!'
+
+class CLang(FileType):
+    def compile(self):
+        return "gcc -o {1} {0} -Wall -Wpedantic -Wextra -Wno-sign-compare -ggdb".format(self.fname, self.fpath)
+
+    def execute(self):
+        return "./{0}".format(self.fname)
+
+class Cpp(CLang):
+    def compile(self):
+        return ["g++", "-Wall", "-Wpedantic", "-Wextra", "-Wno-sign-compare", "-ggdb", "-o", self.fname, self.fpath]
+
+class Python(FileType):
+    def execute(self):
+        return ["python3", self.fpath]
+
+    def execfname(self):
+        return self.fpath
+
+supported_filetypes = {
+    ".c": CLang,
+    ".cpp": Cpp,
+    ".py": Python
+}
+
+# path is returns as [filename, fileext]
+def source(path):
+    filename, fileext = os.path.splitext(path)
+    if (not os.path.isfile(path)):
+        raise argparse.ArgumentTypeError('source file \'%s\' is not valid!' % path)
+    if (not fileext in supported_filetypes.keys()):
+        raise argparse.ArgumentTypeError('extension \'%s\' is not supported!' % fileext)
+    class_ = supported_filetypes[fileext]
+    return class_(filename, fileext)
+
+parser = argparse.ArgumentParser(description='Compile and run files')
+parser.add_argument('source', type=source, help='Source code file')
+parser.add_argument('input', type=argparse.FileType('r'), nargs='*', help='File(s) to pass to stdin',
+default=[sys.stdin])
+parser.add_argument('-q', '--quiet', action='store_true', help='Suppress script output')
+parser.add_argument('-m', '--mute', action='store_true', help='Suppress run status')
+parser.add_argument('-c', '--compile-only', action='store_true', help='Compile but do not run')
+
+args = parser.parse_args()
+# stdin can only be used on its own
+if (sys.stdin in args.input and len(args.input) > 1):
+    logv("Stdin can only be specified on its own!", bcolors.FAIL)
+    sys.exit(-1)
+
+# compile
+filetype = args.source
+compile_cmd = filetype.compile()
+if (not compile_cmd is None):
+    if (os.path.exists(filetype.execfname())):
+        if (os.path.getmtime(filetype.srcfname()) <= os.path.getmtime(filetype.execfname())):
+            compile_cmd = None
+
+if (not compile_cmd is None):
+    logv("Compiling...")
+    if (subprocess.call(compile_cmd)):
+        logv("Failed", bcolors.FAIL)
+        sys.exit(-1)
+    logv("Success")
+
+if (args.compile_only):
+    sys.exit(0)
+
+logv("Running...")
+exec_cmd = filetype.execute()
+for file in args.input:
+    log("Input: {0}".format(file.name))
+    if (not file == sys.stdin):
+        logv(file.read(), color=bcolors.ENDC)
+        file.seek(0)
+        log("Output:")
+    stime = time.time()
+    ecode = subprocess.call(exec_cmd, stdin=file)
+    log()
+    log("Time: {0:.4f}".format(time.time() - stime), bcolors.OKBLUE)
+    log("Exit code: {0}".format(ecode), bcolors.FAIL if ecode != 0 else bcolors.OKGREEN)
+    log("-------------------------------------")
