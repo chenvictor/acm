@@ -15,6 +15,7 @@ void deal(int T) {
 int main() {
   atexit([](){ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
 	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+  cout << fixed << setprecision(12);
 	// Emily <3
 	int T; cin >> T;
 	forx(i,T) deal(i);

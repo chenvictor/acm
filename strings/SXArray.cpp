@@ -8,16 +8,26 @@ const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f
 #define ss second
 
 class SXArray {
+  const int n; int gap;
+  VI sa, pos, lcp;
+  bool cmp(int i, int j) {
+    if (pos[i] != pos[j]) return pos[i] < pos[j];
+    i += gap, j += gap;
+    return (i < n && j < n) ? pos[i] < pos[j] : i > j;
+  }
   public:
-    SXArray(string& s) {
-      cerr << "TODO" << nl;
+    SXArray(string& s) : n(s.size()), gap(1), sa(n), pos(n), lcp(n) {
+      forx(i,n) sa[i] = i, pos[i] = s[i];
+      for (;; gap *= 2) {
+        sort(sa.begin(), sa.end())
+      }
     }
     //starting index (in s) of the ith lexographically smallest suffix
-    int ith_suffix(int i) {
-      return -1;
+    int suf(int i) {
+      r
     }
     //the sorted order of the suffix starting at index idx
-    int order(int idx) {
+    int pos(int idx) {
       return -1;
     }
 };

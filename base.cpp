@@ -11,8 +11,8 @@ const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f
 int main() {
   atexit([](){ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
   ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+  cout << fixed << setprecision(12);
   // Emily <3
-  
   
   return 0;
 }
