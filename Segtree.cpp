@@ -11,7 +11,7 @@ class Segtree { const int h, n; vector<Data> t; vector<Update> d; VB lazy_bit;
     (void) val;
     (void) k;   // k is segment length
   }
-  void apply_lazy(Data& cur, Update lazy, int k) {
+  void apply_lazy(Data& cur, Update val, int k) {
     (void) cur;
     (void) val;
     (void) k;   // k is segment length
