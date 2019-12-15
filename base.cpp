@@ -7,6 +7,7 @@ TD long long ll; TD long double ld; TD pair<int,int> pii; TD pair<ll,ll> pll; TD
 const char nl = '\n'; const int INF = 0x3f3f3f3f; const ll LINF = 0x3f3f3f3f3f3f3f3fll; const ld EPS = 1e-9, PI = acos(-1);
 #define ff first
 #define ss second
+#define all(c) c.begin(),c.end()
 
 int main() {
   atexit([](){ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
