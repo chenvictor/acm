@@ -4,6 +4,8 @@ template <class A, class B> void _print(pair<A,B> v) { cerr << "("; _print(v.ff)
 template <class T, class... Args> void _err(istream_iterator<string> it, T a, Args... args) { cerr << '\t' << *it << " = "; _print(a); _err(++it, args...); }
 #define trace(...)  { cerr << "Line " << __LINE__ << ":"; string _s = #__VA_ARGS__; replace(_s.begin(), _s.end(), ',', ' ');       \
   stringstream _ss(_s); _err(istream_iterator<string>(_ss), __VA_ARGS__); cerr << nl; }
+#define debug if(1)
 #else
 #define trace(...)	{}
+#define debug if(0)
 #endif
