@@ -1,0 +1,16 @@
+function compile() {
+	g++ -g -std=c++17 ${1/.cpp}.cpp -o ${1/.cpp} -O2 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow
+}
+function vimcpp() {
+  if [ -f ${1/.cpp}.cpp ]; then
+    vim ${1/.cpp}.cpp
+  elif [ -f ${1/.py}.py ]; then
+    vim ${1/.py}.py
+  elif [ -f ${1} ]; then
+    vim ${1}
+  else
+    vim ${1}
+  fi
+}
+alias ++='compile'
+alias vi='vimcpp'
