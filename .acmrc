@@ -12,5 +12,15 @@ function vimcpp() {
     vim ${1}
   fi
 }
+function init() {
+  if [ -d ./cur ]; then
+    rm -f ./cur
+  fi
+  if [ ! -d ${1} ]; then
+    mkdir ${1}
+  fi
+  ln -s ${1} cur
+  cd cur
+}
 alias ++='compile'
 alias vi='vimcpp'

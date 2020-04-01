@@ -5,7 +5,9 @@ template <class T, class... Args> void _err(istream_iterator<string> it, T a, Ar
 #define trace(...)  { cerr << "Line " << __LINE__ << ":"; string _s = #__VA_ARGS__; replace(_s.begin(), _s.end(), ',', ' ');       \
   stringstream _ss(_s); _err(istream_iterator<string>(_ss), __VA_ARGS__); cerr << nl; }
 #define debug if(1)
+#define eprintf(...) fprintf(stderr, __VA_ARGS__)
 #else
 #define trace(...)	{}
 #define debug if(0)
+#define eprintf(...) {}
 #endif
