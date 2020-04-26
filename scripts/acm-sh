@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+[ "$0" = 'bash' ] ||
+exec /usr/bin/env bash --rcfile "$0" "$@"
+
+# source .bashrc file
+[ -r ~/.bashrc ] && {
+  . ~/.bashrc
+}
+
+# FUNCTIONS ====================================================================
+
+# Compile c++
+function compile() {
+	g++ -g -std=c++17 ${1/.cpp}.cpp -o ${1/.cpp} -O2 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow
+}
+
+# Open vim, default to .cpp
+function vi() {
+  if [ -f ${1/.cpp}.cpp ]; then
+    vim ${1/.cpp}.cpp
+  elif [ -f ${1/.py}.py ]; then
+    vim ${1/.py}.py
+  elif [ -f ${1} ]; then
+    vim ${1}
+  else
+    vim ${1}
+  fi
+}
+
+# Create new folder and symlink it
+function init() {
+  if [ "$#" -ne 1 ]; then
+    echo "init requires exactly one argument"
+    return -1
+  fi
+  if [ -d ./cur ]; then
+    rm -f ./cur
+  fi
+  if [ ! -d $1 ]; then
+    mkdir $1
+  fi
+  ln -s $1 cur
+  cd cur
+}
+
+function parse_dir() {
+  grep -Eo '[[:alpha:]]+|[0-9]+' <<< "$1"
+}
+
+function submit() {
+  path=$(pwd -P)
+  dir=${path##*/}
+  readarray parsed <<< "$(parse_dir $dir)"
+  [ "${#parsed[@]}" -eq 2 ] && {
+    [ ${parsed[0]} = "cf" ] && {
+      cf ${parsed[1]} "$@"
+      return $?
+    }
+  }
+  printf "Could not parse directory: %s\n" $dir
+  return -1
+}
+
+# PROMPT =======================================================================
+
+PS1='[ACM]:\w\$ '
+
+# ALIASES ======================================================================
+
+alias rem='echo is best girl'
+alias ++='compile'
+alias sm='submit'

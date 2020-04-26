@@ -1,2 +1,4 @@
 *.out
 *.swap
+**/__pycache__/*
+scripts/creds.py
