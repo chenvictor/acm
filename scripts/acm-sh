@@ -44,22 +44,17 @@ function init() {
   cd cur
 }
 
-function parse_dir() {
-  grep -Eo '[[:alpha:]]+|[0-9]+' <<< "$1"
-}
-
 function submit() {
   path=$(pwd -P)
   dir=${path##*/}
-  readarray parsed <<< "$(parse_dir $dir)"
-  [ "${#parsed[@]}" -eq 2 ] && {
-    [ ${parsed[0]} = "cf" ] && {
-      cf ${parsed[1]} "$@"
-      return $?
-    }
-  }
-  printf "Could not parse directory: %s\n" $dir
-  return -1
+  if [[ $dir = cf-* ]]; then
+    cf.py ${dir:3} "$@"
+  elif [[ $dir = at-* ]]; then
+    at.py ${dir:3} "$@"
+  else
+    printf "Could not parse directory: %s\n" $dir
+    return -1
+  fi
 }
 
 # PROMPT =======================================================================

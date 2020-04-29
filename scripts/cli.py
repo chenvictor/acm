@@ -13,8 +13,9 @@ class CLI(ABC):
     def supported(self, extension):
         pass
 
+    # Return true on error
     @abstractmethod
-    def submit(self, contestId, problemId, sourceFile):
+    def submit(self, contestId, problemId, sourceFile, ext):
         pass
 
     def valid_file(self, name):
@@ -44,5 +45,7 @@ class CLI(ABC):
         problem = args.problem
         if problem is None:
             problem = self.guess_problem(args.source)
-        self.submit(args.contestId, problem, args.source)
+        if self.submit(args.contestId, problem, args.source, args.source.split('.')[-1]):
+            exit(-1)
+        print('submitted')
 
