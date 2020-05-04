@@ -3,11 +3,6 @@ from argparse import ArgumentParser, FileType, ArgumentTypeError
 from string import ascii_lowercase, ascii_uppercase
 import os
 
-def letter(value):
-    if not value in ascii_lowercase:
-        raise ArgumentTypeError('problem must be a single lowercase letter')
-    return value
-
 class CLI(ABC):
     @abstractmethod
     def supported(self, extension):
@@ -26,6 +21,11 @@ class CLI(ABC):
             raise ArgumentTypeError('source file doesn\'t exist')
         return name
 
+    def valid_problem(self, problemId):
+        if not problemId in ascii_lowercase:
+            raise ArgumentTypeError('problem must be a single lowercase letter')
+        return problemId
+
     def guess_problem(self, sourceFile):
         p = sourceFile.split('.')[0]
         if p in ascii_lowercase:
@@ -39,7 +39,7 @@ class CLI(ABC):
         parser = ArgumentParser(description='CLI Submit')
         parser.add_argument('contestId')
         parser.add_argument('source', type=self.valid_file)
-        parser.add_argument('-p', '--problem', type=letter)
+        parser.add_argument('-p', '--problem', type=self.valid_problem)
         args = parser.parse_args()
 
         problem = args.problem

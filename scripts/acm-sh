@@ -16,7 +16,7 @@ function compile() {
 }
 
 # Open vim, default to .cpp
-function vi() {
+function vicpp() {
   if [ -f ${1/.cpp}.cpp ]; then
     vim ${1/.cpp}.cpp
   elif [ -f ${1/.py}.py ]; then
@@ -51,6 +51,8 @@ function submit() {
     cf.py ${dir:3} "$@"
   elif [[ $dir = at-* ]]; then
     at.py ${dir:3} "$@"
+  elif [[ $dir = ka-* ]]; then
+    ka.py ${dir:3} "$@"
   else
     printf "Could not parse directory: %s\n" $dir
     return -1
@@ -66,3 +68,4 @@ PS1='[ACM]:\w\$ '
 alias rem='echo is best girl'
 alias ++='compile'
 alias sm='submit'
+alias vi='vicpp'
