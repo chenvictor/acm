@@ -8,6 +8,9 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
   . ~/.bashrc
 }
 
+# Navigate to folder
+cd ~/ACM
+
 # FUNCTIONS ====================================================================
 
 # Compile c++
@@ -28,6 +31,14 @@ function vicpp() {
   fi
 }
 
+function watch() {
+  submit.py $@ -w
+}
+
+function all() {
+  submit.py $@ -wt
+}
+
 # Create new folder and symlink it
 function init() {
   if [ "$#" -ne 1 ]; then
@@ -44,21 +55,6 @@ function init() {
   cd cur
 }
 
-function submit() {
-  path=$(pwd -P)
-  dir=${path##*/}
-  if [[ $dir = cf-* ]]; then
-    cf.py ${dir:3} "$@"
-  elif [[ $dir = at-* ]]; then
-    at.py ${dir:3} "$@"
-  elif [[ $dir = ka-* ]]; then
-    ka.py ${dir:3} "$@"
-  else
-    printf "Could not parse directory: %s\n" $dir
-    return -1
-  fi
-}
-
 # PROMPT =======================================================================
 
 PS1='[ACM]:\w\$ '
@@ -67,5 +63,6 @@ PS1='[ACM]:\w\$ '
 
 alias rem='echo is best girl'
 alias ++='compile'
-alias sm='submit'
+alias sm='submit.py'
+alias wa='watch'
 alias vi='vicpp'

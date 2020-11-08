@@ -10,3 +10,4 @@ struct DSU {
     p[y] += p[x]; p[x] = y; c--;
   }
 };
+

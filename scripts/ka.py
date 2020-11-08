@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from cli import CLI
 from robobrowser import RoboBrowser
+import logging
+logger = logging.getLogger('submit-cli')
 
 def getURL(contestId, problemId, sourceFile):
-    print('submitting {} to problem {} of {}.kattis'.format(sourceFile, problemId, contestId))
 
     # non open problems are prefixed with contestId
     if contestId != 'open':
@@ -12,36 +13,35 @@ def getURL(contestId, problemId, sourceFile):
     url = 'https://{}.kattis.com/problems/{}/submit'
     return url.format(contestId, problemId.lower())
 
-def login(contestId):
-    from creds import KA_USER, KA_AUTH
-
-    robo = RoboBrowser(parser='html.parser')
-    login_url = 'https://{}.kattis.com/login'.format(contestId)
-    data = {'user': KA_USER, 'token': KA_AUTH, 'script': 'true'}
-    headers = {'User-Agent': 'kattis-cli-submit'}
-    robo.open(login_url, method='post', data=data, headers=headers)
-    res = str(robo.parsed).strip().replace('\\n', '')
-    if res != 'Login successful':
-        print('Login failed: {}'.format(res))
-        exit(-1)
-
-    print('KA logged in as {}'.format(KA_USER))
-    return robo
-
 LANGS = {
     'cpp': 'C++',
     'py': 'Python 3',
 }
 
 class KA(CLI):
-    def supported(self, ext):
-        return ext in LANGS
+    def get_creds(self):
+        from creds import KA_USER, KA_AUTH
+        return KA_USER, KA_AUTH
 
-    def guess_problem(self, sourceFile):
-        return sourceFile.split('.')[0].lower()
+    def login(self, contestId):
+        robo = RoboBrowser(parser='html.parser')
+        login_url = 'https://{}.kattis.com/login'.format(contestId)
+        data = {'user': KA_USER, 'token': KA_AUTH, 'script': 'true'}
+        headers = {'User-Agent': 'kattis-cli-submit'}
+        robo.open(login_url, method='post', data=data, headers=headers)
+        res = str(robo.parsed).strip().replace('\\n', '')
+        if res != 'Login successful':
+            print('Login failed: {}'.format(res))
+            exit(-1)
 
-    def valid_problem(self, problemId):
-        return problemId
+        print('KA logged in as {}'.format(KA_USER))
+        return robo
+
+    def lang_ok(self, lang):
+        return lang in LANGS
+
+    def get_samples(self, contestId, problemId):
+        return [], []
 
     def submit(self, contestId, problemId, sourceFile, ext):
         robo = login(contestId)

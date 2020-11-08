@@ -1,51 +1,56 @@
 from abc import ABC, abstractmethod
+from robobrowser import RoboBrowser
 from argparse import ArgumentParser, FileType, ArgumentTypeError
-from string import ascii_lowercase, ascii_uppercase
 import os
+import logging
+from getpass import getpass
+
+logger = logging.getLogger('submit-cli')
+TICK = .25
 
 class CLI(ABC):
     @abstractmethod
-    def supported(self, extension):
+    def get_creds(self):
         pass
 
-    # Return true on error
     @abstractmethod
-    def submit(self, contestId, problemId, sourceFile, ext):
+    def lang_ok(self, lang):
         pass
 
-    def valid_file(self, name):
-        ext = name.split('.')[-1]
-        if not self.supported(ext):
-            raise ArgumentTypeError('extension {} not supported'.format(ext))
-        if not os.path.exists(name):
-            raise ArgumentTypeError('source file doesn\'t exist')
-        return name
+    @abstractmethod
+    def login(self):
+        pass
 
-    def valid_problem(self, problemId):
-        if not problemId in ascii_lowercase:
-            raise ArgumentTypeError('problem must be a single lowercase letter')
-        return problemId
+    # Return error message, or None if success
+    @abstractmethod
+    def submit(self, contestId, problemId, lang, sourceFile):
+        pass
 
-    def guess_problem(self, sourceFile):
-        p = sourceFile.split('.')[0]
-        if p in ascii_lowercase:
-            return sourceFile[0]
-        if p in ascii_uppercase:
-            return p.lower()
-        print('could not guess problemId, specify using -p flag')
-        exit(-1)
+    @abstractmethod
+    def get_samples(self, contestId, problemId):
+        pass
+
+    # Return (message, done) pair
+    def ping(self, contestId, problemId):
+        logger.error('Watch not supported!')
+
+    def watch(self, contestId, problemId):
+        import spinner
+        from time import sleep
+        ping_func = self.ping(contestId, problemId)
+
+        while True:
+            status, done = next(ping_func)
+            spinner.display(status)
+            if done:
+                break
+            sleep(TICK)
 
     def __init__(self):
-        parser = ArgumentParser(description='CLI Submit')
-        parser.add_argument('contestId')
-        parser.add_argument('source', type=self.valid_file)
-        parser.add_argument('-p', '--problem', type=self.valid_problem)
-        args = parser.parse_args()
-
-        problem = args.problem
-        if problem is None:
-            problem = self.guess_problem(args.source)
-        if self.submit(args.contestId, problem, args.source, args.source.split('.')[-1]):
-            exit(-1)
-        print('submitted')
-
+        self.username, self.password = self.get_creds()
+        while len(self.username or '') == 0:
+            self.username = input('Enter username: ')
+        while len(self.password or '') == 0:
+            self.password = getpass(prompt='Enter password: ')
+        self.robo = RoboBrowser(parser='html.parser')
+        self.login()

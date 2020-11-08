@@ -75,3 +75,4 @@ _op(<) _op(<=) _op(==) _op(!=) _op(>) _op(>=)
   BigInt operator--(int) { BigInt copy = *this; *this -= 1; return copy; } BigInt square() { if (!sgn) return *this; return (*this) * (*this); }
   BigInt pow(int exp) { BigInt ans(1), base(*this); for (; exp > 0; exp >>= 1, base = base.square()) if (exp & 1) ans *= base; return ans; }
 };
+

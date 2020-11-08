@@ -20,3 +20,4 @@ class Rational {
   _(*, Rational, *=); _(/, Rational, /=); _(+, Rational, +=); _(-, Rational, -=); _(*, ll, *=); _(/, ll, /=); _(+, ll, +=); _(-, ll, -=);
 #undef _
 };
+

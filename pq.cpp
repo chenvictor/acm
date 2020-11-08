@@ -19,3 +19,4 @@ class PQ { Compare cmp; VI c; vector<pair<int, T>> km;
     if (i) go_up ? h_up(i) : h_dn(i); else c.push_back(key), h_up(i = c.size()); }
   void pop() { swp(c.size(), 1); idx(c.back()) = 0; c.pop_back(); h_dn(1); }
 };
+
