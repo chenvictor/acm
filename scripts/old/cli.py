@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+import werkzeug
+werkzeug.cached_property = werkzeug.utils.cached_property
 from robobrowser import RoboBrowser
 from argparse import ArgumentParser, FileType, ArgumentTypeError
 import os

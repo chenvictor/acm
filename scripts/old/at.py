@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from cli import CLI
+import werkzeug
+werkzeug.cached_property = werkzeug.utils.cached_property
 from robobrowser import RoboBrowser
 from bs4 import BeautifulSoup
 import json

@@ -14,8 +14,11 @@ cd ~/ACM
 # FUNCTIONS ====================================================================
 
 # Compile c++
-function compile() {
-	g++ -g -std=c++17 ${1/.cpp}.cpp -o ${1/.cpp} -O2 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow
+function co() {
+	g++ -std=c++17 ${1/.cpp}.cpp -o ${1/.cpp} -O2 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow
+}
+function de() {
+	g++ -ggdb -std=c++17 ${1/.cpp}.cpp -o ${1/.cpp} -O0 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow -D DEBUG
 }
 
 # Open vim, default to .cpp
@@ -62,7 +65,5 @@ PS1='[ACM]:\w\$ '
 # ALIASES ======================================================================
 
 alias rem='echo is best girl'
-alias ++='compile'
-alias sm='submit.py'
-alias wa='watch'
+alias emily=rem
 alias vi='vicpp'
