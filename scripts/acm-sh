@@ -15,10 +15,12 @@ cd ~/ACM
 
 # Compile c++
 function co() {
-	g++ -std=c++17 ${1/.cpp}.cpp -o ${1/.cpp} -O2 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow
+  file=$1; shift;
+	g++ -std=c++17 ${file/.cpp}.cpp -o ${file/.cpp} -O2 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow $@
 }
 function de() {
-	g++ -ggdb -std=c++17 ${1/.cpp}.cpp -o ${1/.cpp} -O0 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow -D DEBUG
+  file=$1; shift;
+	g++ -ggdb -std=c++17 ${file/.cpp}.cpp -o ${file/.cpp} -O0 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow -D DEBUG $@
 }
 
 # Open vim, default to .cpp
