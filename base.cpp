@@ -12,21 +12,20 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 #define all(c) begin(c),end(c)
 #define sz(c) int(c.size())
 
-///////////////
-// BOOK CODE //
-///////////////
+/* BOOK CODE */
 
+/* REAL CODE */
 
-///////////////
-// REAL CODE //
-///////////////
+void code() {
 
-
-int main() { // Emily <3
-  atexit([](){ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
-  ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-  cout << fixed << setprecision(12);
-
-  return 0;
 }
 
+/* MAIN CODE */
+
+int main() { // Emily <3
+  atexit([]{ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
+  cin.tie(0)->sync_with_stdio(0);
+  cout << fixed << setprecision(12);
+  code();
+  return 0;
+}

@@ -12,19 +12,16 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 #define all(c) begin(c),end(c)
 #define sz(c) int(c.size())
 
-///////////////
-// BOOK CODE //
-///////////////
+/* BOOK CODE */
 
-
-///////////////
-// REAL CODE //
-///////////////
+/* REAL CODE */
 
 void deal(int TC) {
   (void) TC;
 
 }
+
+/* MAIN CODE */
 
 int main() { // Emily <3
   atexit([](){ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
