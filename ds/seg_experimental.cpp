@@ -8,15 +8,9 @@ struct Segtree {
   constexpr static int SZ = 1 << K;
   T t[SZ*2];
   T& operator[](int i) { return t[i+SZ]; }
-  void push(int i, int s, int e) {
+  void push(int i, int len) {
     /* LAZY */
-//    if (t[i].lazy == 0) return;
-//    t[i].val ...t[i].lazy;
-//    if (i < SZ) {
-//      set(L, t[i].lazy);
-//      set(R, t[i].lazy);
-//    }
-//    t[i].lazy = 0;
+    t[i].prop(t[L], t[R], len);
   }
   void build(int i=1, int s=0, int e=SZ) {
     if (s+1 == e) return;
@@ -25,49 +19,61 @@ struct Segtree {
     t[i].merge(t[L], t[R]);
   }
   void update(int l, int r, typename T::V v, int i=1, int s=0, int e=SZ) {
-    if (OUT) return;
     if (IN) {
-      t[i].set(v);
+      t[i].set(v,e-s);
       return;
     }
-    push(i,s,e);
+    if (OUT) return;
+    push(i,e-s);
     update(l, r, v, L, s, MID);
     update(l, r, v, R, MID, e);
     t[i].merge(t[L], t[R]);
   }
   T query(int l, int r, int i=1, int s=0, int e=SZ) {
+    if (IN) return t[i];
     T ans = {};
     if (OUT) return ans;
-    push(i,s,e);
-    if (IN) return t[i];
+    push(i,e-s);
     ans.merge(query(l, r, L, s, MID), query(l, r, R, MID, e));
     return ans;
   }
   /* binary search on { r, val }
    * where non-empty range [l, r) has value >= lim */
-  pair<int,T> find_k(int l, T lim, int i=1, int s=0, int e=SZ, T add={}) {
+  pair<int,T> find(int l, typename T::S lim, int i=1, int s=0, int e=SZ, T add={}) {
     if (e <= l) return make_pair(e, T());
-    push(i,s,e);
     T cur; cur.merge(add, t[i]);
     if (s+1 == e || !(cur >= lim)) {
       return make_pair(e, cur);
     }
-    auto left = find_k(l, lim, L, s, MID, add);
+    push(i,e-s);
+    auto left = find(l, lim, L, s, MID, add);
     if (left.ss >= lim) return left;
-    return find_k(l, lim, R, MID, e, left.ss);
+    return find(l, lim, R, MID, e, left.ss);
   }
 };
 
 struct Data {
   // TODO: define data, default value!!
-  using V = int;
-  void set(V val) {
-    throw "Not implemented";
-  }
   void merge(const Data& l, const Data& r) {
     throw "Not implemented";
   }
-  bool operator>=(const Data& o) {
+  /* Update */
+  using V = int;
+  void set(V val, int len) {
+    throw "Not implemented";
+  }
+  /* Lazy Prop */
+  void prop(Data& l, Data& r, int len) {
+    // Optional
+//    if (d == -1) return;
+//    l.set(d,len/2);
+//    r.set(d,len/2);
+//    d = -1;
+  }
+  /* Binary Search */
+  using S = int;
+  bool operator>=(S lim) const {
+    // Optional
     throw "Not implemented";
   }
 };
