@@ -31,7 +31,7 @@ struct Segtree {
   }
   T query(int l, int r, int i=1, int s=0, int e=SZ) {
     if (IN) return t[i];
-    T ans = {};
+    T ans = T::null();
     if (OUT) return ans;
     push(i,e-s);
     ans.merge(query(l, r, L, s, MID), query(l, r, R, MID, e));
@@ -39,8 +39,8 @@ struct Segtree {
   }
   /* binary search on { r, val }
    * where non-empty range [l, r) has value >= lim */
-  pair<int,T> find(int l, typename T::S lim, int i=1, int s=0, int e=SZ, T add={}) {
-    if (e <= l) return make_pair(e, T());
+  pair<int,T> find(int l, typename T::S lim, int i=1, int s=0, int e=SZ, T add=T::null()) {
+    if (e <= l) return make_pair(e, T::null());
     T cur; cur.merge(add, t[i]);
     if (s+1 == e || !(cur >= lim)) {
       return make_pair(e, cur);
@@ -53,7 +53,10 @@ struct Segtree {
 };
 
 struct Data {
-  // TODO: define data, default value!!
+  // TODO: define data, default value, null value
+  constexpr static Data null() {
+    throw "Not implemented";
+  }
   void merge(const Data& l, const Data& r) {
     throw "Not implemented";
   }
