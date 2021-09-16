@@ -8,9 +8,6 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
   . ~/.bashrc
 }
 
-# Navigate to folder
-cd ~/ACM
-
 # FUNCTIONS ====================================================================
 
 # Compile c++
