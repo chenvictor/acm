@@ -10,14 +10,16 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 
 # FUNCTIONS ====================================================================
 
+STD="-std=c++17"
+FLAGS="-Wall -Wshadow -Wno-sign-compare -Wconversion -Wmaybe-uninitialized -Wfatal-errors"
 # Compile c++
 function co() {
   file=$1; shift;
-	g++ -std=c++17 ${file/.cpp}.cpp -o ${file/.cpp} -O2 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow $@
+	g++ $STD ${file/.cpp}.cpp -o ${file/.cpp} -O2 $FLAGS $@
 }
 function de() {
   file=$1; shift;
-	g++ -ggdb -std=c++17 ${file/.cpp}.cpp -o ${file/.cpp} -O0 -Wall -Wno-sign-compare -Wfatal-errors -Wshadow -D DEBUG $@
+	g++ -ggdb $STD ${file/.cpp}.cpp -o ${file/.cpp} -O0 $FLAGS -D DEBUG $@
 }
 
 # Open vim, default to .cpp
