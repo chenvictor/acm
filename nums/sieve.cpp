@@ -2,7 +2,7 @@ template <size_t N>
 struct SIEVE {
   // See https://codeforces.com/blog/entry/54090
   vi prime;
-  int f[N];
+  int f[N] = {-1,-1};
   // if prime (or <= 1)
   //   f[i] = 0
   // otherwise
@@ -18,6 +18,9 @@ struct SIEVE {
         if (i%p == 0) break;
       }
     }
+  }
+  bool operator()(int v) {
+    return !f[v];
   }
 };
 
