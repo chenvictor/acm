@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-from cli import CLI
+from utils.oj import OnlineJudge
 import werkzeug
-werkzeug.cached_property = werkzeug.utils.cached_property
+#werkzeug.cached_property = werkzeug.utils.cached_property
 from robobrowser import RoboBrowser
 from bs4 import BeautifulSoup
 import json
 import logging
-from format import Format
-logger = logging.getLogger('submit-cli')
 
 LANGS = {
     'cpp': ['4003', '3003'],
@@ -18,13 +16,8 @@ def get_url(contestId, problemId):
     url = 'https://atcoder.jp/contests/{0}/tasks/{0}_{1}'.format(contestId, problemId)
     return url.format(contestId)
 
-class at(CLI):
-    def get_creds(self):
-        from creds import AT_USER, AT_PASS
-        return AT_USER, AT_PASS
-
-    def lang_ok(self, lang):
-        return lang in LANGS
+class AtCoder(OnlineJudge):
+    config = '.atconfig.json'
 
     def login(self):
         self.robo.open('https://atcoder.jp/login')
@@ -71,7 +64,7 @@ class at(CLI):
                 logger.debug('Lang code {} not available.'.format(code))
         if not langSet:
             logger.error('No known lang code available!')
-        
+
         with open(sourceFile, mode='r') as f:
             form['sourceCode'] = f.read()
         res = self.robo.submit_form(form)
@@ -90,27 +83,21 @@ class at(CLI):
             logger.error('Error parsing submission meta')
 
     def ping(self, contestId, problemId):
-        from format import Format
-        format = Format(
-            queue_code      = 'Waiting for Judging',
-            cpe_code        = 'Compilation Error',
-            running_code    = 'Judging',
-            ac_code         = 'Accepted',
-            tle_code        = 'Time Limit Exceeded'
-        )
+        pass
+#        sId = self.getSubmissionMeta(contestId, problemId)
+#        url = 'https://atcoder.jp/contests/{}/submissions/me/status/json?sids[]={}'.format(contestId, sId)
+#        logger.debug('pinging url: {}'.format(url))
+#        while True:
+#            self.robo.open(url)
+#            res = json.loads(str(self.robo.parsed))
+#            try:
+#                res = BeautifulSoup(res['Result'][sId]['Html'], 'html.parser').find('span')
+#                code = res['title']
+#                msg    = res.get_text().strip()
+#            except:
+#                logger.error('Error parsing ping response')
+#
+#            yield format.parse(code, None)
 
-        sId = self.getSubmissionMeta(contestId, problemId)
-        url = 'https://atcoder.jp/contests/{}/submissions/me/status/json?sids[]={}'.format(contestId, sId)
-        logger.debug('pinging url: {}'.format(url))
-        while True:
-            self.robo.open(url)
-            res = json.loads(str(self.robo.parsed))
-            try:
-                res = BeautifulSoup(res['Result'][sId]['Html'], 'html.parser').find('span')
-                code = res['title']
-                msg    = res.get_text().strip()
-            except:
-                logger.error('Error parsing ping response')
-
-            yield format.parse(code, None)
+at = AtCoder()
 
