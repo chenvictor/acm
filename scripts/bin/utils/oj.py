@@ -12,6 +12,9 @@ def error(msg):
     print(msg, file=sys.stderr)
     exit(-1)
 
+def log(msg):
+    print(msg, file=sys.stderr)
+
 DATA_FILE = '.data'
 
 def load_data():
@@ -51,7 +54,7 @@ class OnlineJudge(metaclass=ABCMeta):
         Path to the .config.json file containing login credentials
         """
         pass
-    
+
     def get_creds(self):
         path = Path.home() / self.config
         try:
@@ -73,6 +76,7 @@ class OnlineJudge(metaclass=ABCMeta):
         pass
 
     def login(self):
+        log('logging in')
         creds = self.get_creds()
         res = self.do_login(creds['username'], creds['token'])
         if res is not None:
