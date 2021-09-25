@@ -22,7 +22,7 @@ function de() {
 	g++ -ggdb $STD ${file/.cpp}.cpp -o ${file/.cpp} -O0 $FLAGS -D DEBUG $@
 }
 
-# Open vim, default to .cpp
+# Open vim, default to .cpp. .py
 function vicpp() {
   if [ -f ${1/.cpp}.cpp ]; then
     vim ${1/.cpp}.cpp
@@ -33,14 +33,6 @@ function vicpp() {
   else
     vim ${1}
   fi
-}
-
-function watch() {
-  submit.py $@ -w
-}
-
-function all() {
-  submit.py $@ -wt
 }
 
 # Create new folder and symlink it
@@ -68,3 +60,10 @@ PS1='[ACM]:\w\$ '
 alias rem='echo is best girl'
 alias emily=rem
 alias vi='vicpp'
+
+# BINARIES
+
+SCRIPT=`realpath $BASH_SOURCE`
+SCRIPTPATH=`dirname $SCRIPT`
+export PATH="$SCRIPTPATH/bin":$PATH
+
