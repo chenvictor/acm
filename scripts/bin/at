@@ -19,11 +19,11 @@ def get_url(contestId, problemId):
 class AtCoder(OnlineJudge):
     config = '.atconfig.json'
 
-    def login(self):
+    def login(self, username, token):
         self.robo.open('https://atcoder.jp/login')
         form = self.robo.get_form(class_='form-horizontal')
-        form['username'] = self.username
-        form['password'] = self.password
+        form['username'] = username
+        form['password'] = token
         self.robo.submit_form(form)
         errors = self.robo.select('.alert-danger')
         if len(errors) > 0:

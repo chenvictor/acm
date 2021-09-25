@@ -8,6 +8,11 @@ from pathlib import Path
 
 class OnlineJudge(metaclass=ABCMeta):
 
+    def __init__(self):
+        creds = self.get_creds()
+        self.robo = RoboBrowser(parser='html.parser')
+        self.login(creds['username'], creds['token'])
+
     @property
     @abstractmethod
     def config(self) -> str:
@@ -17,20 +22,21 @@ class OnlineJudge(metaclass=ABCMeta):
         pass
     
     def get_creds(self):
-        path = '{}/{}'.format(os.path.self.config)
-        print('get creds from', path)
+        path = Path.home() / self.config
         try:
             with open(path, 'r') as f:
-                data = json.load(f)
+                creds = json.load(f)
         except:
-            import sys
-            print(sys.exc_info())
             print('failed to read config.json!')
             exit(-1)
-        print(data)
+        for key in ['username', 'token']:
+            if key not in creds:
+                print('{} is missing {}'.format(self.config, key))
+                exit(-1)
+        return creds
 
     @abstractmethod
-    def login(user, token, self) -> None:
+    def login(self, user, token) -> None:
         pass
 
     # Return error message, or None if success
@@ -58,7 +64,3 @@ class OnlineJudge(metaclass=ABCMeta):
 #                break
 #            sleep(TICK)
 
-    def __init__(self):
-        self.get_creds()
-#        self.robo = RoboBrowser(parser='html.parser')
-#        self.login()
