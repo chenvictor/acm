@@ -14,15 +14,32 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 
 /* BOOK CODE */
 
-template <typename K, typename V, class Compare=less<T>>
+template <typename K, typename V>
 struct skiplist {
-  list<
+  struct node {
+    using ptr = shared_ptr<node>;
+    pair<K,V> kv;
+    ptr l,r;
+    node(pair<K,V> kv, ptr l = NULL, ptr r = NULL): kv(kv), l(l), r(r) {}
+    pair<K,V>& operator*() {
+      return kv;
+    }
+    // insert after current node
+    void append(pair<K,V> v) {
+      auto n = new node(v.kv);
+      n->l = l; n->r = 
+      l = l->r = new node(v);
+    }
+  } head[20];
+  ptr lower_bound(K k): const {
+    // smallest val >= k
+  }
 };
 
 /* REAL CODE */
 
 void code() {
-  
+  skiplist<int,int> list;
 }
 
 /* MAIN CODE */
