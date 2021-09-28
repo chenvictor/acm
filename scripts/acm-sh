@@ -67,3 +67,7 @@ SCRIPT=`realpath $BASH_SOURCE`
 SCRIPTPATH=`dirname $SCRIPT`
 export PATH="$SCRIPTPATH/bin":$PATH
 
+# Increase stack size
+
+ulimit -s 1048576
+
