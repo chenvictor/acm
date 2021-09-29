@@ -36,16 +36,26 @@ void _print(pair<F,S>& p) {
 
 /* BOOK CODE */
 
-template <class K, typename V>
+random_device rd;
+mt19937 rng(rd());
+
+template <class K, typename V, int MAXL>
 struct skiplist {
+  geometric_distribution<> geom;
   struct node;
   using ptr = node*;
   struct node {
-    ptr l,r,bot,up;
-    pair<K,V> kv;
-    node(): l(this), r(this) {}
-    node(K k, V v, ptr p, ptr n): l(p), r(n), kv(k,v) {}
-    auto& operator*() { return kv; }
+    ptr l,r; // doubly linked list
+    ptr up;  // entry in L_{i+1}
+    ptr bot; // entry in L0 (could be self)
+    union {
+      ptr dn;       // entry in L_{i-1}
+      pair<K,V> kv; // or pair<K,V> if L0 node
+    };
+    node(): l(this), r(this), bot(this) {}
+    node(K k, V v, ptr p, ptr n): l(p), r(n), bot(this), kv(k,v) {}
+    ~node() {}
+    auto& operator*() { return bot->kv; }
     // insert after current node
     ptr append(K k, V v) {
       return r = r->l = new node(k, v, this, this->r);
@@ -55,27 +65,97 @@ struct skiplist {
     node* p;
     iter& operator++() { p = p->r; return *this; }
     iter operator++(int) const { return ++iter(*this); }
+    bool operator==(const iter& b) const { return p == b.p; }
     bool operator!=(const iter& b) const { return p != b.p; }
     auto& operator*() { return **p; }
+    auto operator->() { return &**p; }
   };
-  vector<node> head;
-  skiplist(): head(1) { }
-  iter begin() { return { head[0].r }; }
-  iter end()   { return { &head[0]  }; }
-  ptr lower_bound(K k): const {
-    // smallest val >= k
+  node head[MAXL]; int c=0; // current # levels
+  skiplist() {
+    rep(i,1,MAXL) {
+      head[i].bot = &head[0];
+      head[i].dn = &head[i-1];
+      lb[i] = head[i-1].up = &head[i];
+    }
+  }
+  ~skiplist() {}
+  iter begin(int i=0) { return { head[i].r }; }
+  iter end(int i=0)   { return { &head[i]  }; }
+
+  ptr lb[MAXL];
+  iter lower_bound(K k) {
+    lb[c] = &head[c];
+    for (int i=c; i >= 0; --i) {
+      while (lb[i]->r != &head[i] && lb[i]->r->bot->kv.ff <= k) {
+        lb[i] = lb[i]->r;
+      }
+      if (i > 0) {
+        lb[i-1] = lb[i]->dn;
+      }
+    }
+    return { lb[0] };
+  }
+  int count(K k) {
+    iter it = lower_bound(k);
+    return it->ff == k;
+  }
+  V& operator[](K k) {
+    iter it = lower_bound(k);
+    if (it == end() || it->ff != k) {
+      const int level = min(geom(rng), MAXL-1);
+      trace(level);
+      for(int i=0; i <= level; ++i) {
+        ptr nu = lb[i]->append(k, {});
+        if (i > 0) {
+          nu->bot = lb[0]->r;
+          nu->dn = lb[i-1]->r;
+          nu->dn->up = nu;
+        }
+      }
+      c = max(c, level);
+    }
+    return it->ss;
   }
 };
 
 /* REAL CODE */
 
+template <class K, class V, int SZ>
+void verbose(skiplist<K,V,SZ>& list) {
+  debug {
+    const int levels = list.c+1;
+    static char buffer[50];
+    assert(levels >= 1);
+    for (int i=0; i < levels; ++i) {
+      auto l0 = list.begin();
+      fprintf(stderr, "L%02d:", i);
+      for (auto it = list.begin(i); it != list.end(i); ++it, ++l0) {
+        while (it.p->bot != l0.p) {
+          const int nspaces = sprintf(buffer, " %s", l0->ff.c_str());
+          fprintf(stderr, "%*s", nspaces, "");
+          ++l0;
+        }
+        fprintf(stderr, " %s", it->ff.c_str());
+      }
+      cerr << nl;
+    }
+  }
+}
+
 void code() {
-  skiplist<int,int> list;
-  list.head[0].append(2,10);
-  list.head[0].append(1,2);
-  list.head[0].append(0,10);
-  for (pii v : list) {
-    trace(v);
+  // testing on https://codeforces.com/contest/855/problem/A
+  skiplist<string,bool,20> list;
+  int n;
+  cin >> n;
+  for(int i=0; i < n; ++i) {
+    string s; cin >> s;
+    if (list.count(s)) {
+      cout << "YES\n";
+    } else {
+      list[s] = 1;
+      cout << "NO\n";
+    }
+    verbose(list);
   }
 }
 
