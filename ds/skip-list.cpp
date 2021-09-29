@@ -39,39 +39,51 @@ void _print(pair<F,S>& p) {
 random_device rd;
 mt19937 rng(rd());
 
-template <class K, typename V, int MAXL>
+template <class K, typename T, int MAXL=20> // MAXL should be roughly lg(max elems)
 struct skiplist {
   geometric_distribution<> geom;
   struct node;
   using ptr = node*;
+  using value_type = pair<const K, T>;
   struct node {
     ptr l,r; // doubly linked list
     ptr up;  // entry in L_{i+1}
     ptr bot; // entry in L0 (could be self)
     union {
       ptr dn;       // entry in L_{i-1}
-      pair<K,V> kv; // or pair<K,V> if L0 node
+      pair<const K,T> kv; // or pair<K,T> if L0 node
     };
     node(): l(this), r(this), bot(this) {}
-    node(K k, V v, ptr p, ptr n): l(p), r(n), bot(this), kv(k,v) {}
+    node(ptr p, ptr n, ptr b, ptr d): l(p), r(n), bot(b), dn(d) { d->up = this; }
+    node(ptr p, ptr n, const value_type& val): l(p), r(n), bot(this), kv(val) {}
+    node(const K& k, T v, ptr p, ptr n): l(p), r(n), bot(this), kv(k,v) {}
     ~node() {}
-    auto& operator*() { return bot->kv; }
     // insert after current node
-    ptr append(K k, V v) {
-      return r = r->l = new node(k, v, this, this->r);
+    ptr append(const value_type& val) {
+      assert(this == bot && "only append value at L0");
+      return r = r->l = new node(this, this->r, val);
+    }
+    ptr append(ptr b, ptr d) {
+      assert(this != b && "only append ptrs at L>0");
+      return r = r->l = new node(this, this->r, b, d);
     }
   };
   struct iter {
-    node* p;
+    ptr p;
+    iter(ptr x): p(x) {}
     iter& operator++() { p = p->r; return *this; }
     iter operator++(int) const { return ++iter(*this); }
+    iter& operator--() { p = p->l; return *this; }
+    iter operator--(int) const { return --iter(*this); }
     bool operator==(const iter& b) const { return p == b.p; }
     bool operator!=(const iter& b) const { return p != b.p; }
-    auto& operator*() { return **p; }
-    auto operator->() { return &**p; }
+    auto& operator*() { return p->bot->kv; }
+    auto operator->() { return &p->bot->kv; }
   };
   node head[MAXL]; int c=0; // current # levels
-  skiplist() {
+  ptr lb[MAXL]; // prev ptr from lower_bound
+  size_t _size;
+  skiplist(): _size(0) {
     rep(i,1,MAXL) {
       head[i].bot = &head[0];
       head[i].dn = &head[i-1];
@@ -79,11 +91,48 @@ struct skiplist {
     }
   }
   ~skiplist() {}
-  iter begin(int i=0) { return { head[i].r }; }
-  iter end(int i=0)   { return { &head[i]  }; }
+  iter begin(int i=0) { return head[i].r; }
+  iter end(int i=0)   { return &head[i]; }
+  bool empty() const  { return size() == 0; }
+  size_t size() const { return _size; }
+  T& operator[](const K& k) {
+    return insert(make_pair(k, T())).first->second;
+  }
+  pair<iter,bool> insert (const value_type& val) {
+    iter it = lower_bound(val.first);
+    if (it != end() && it->first == val.first) {
+      return make_pair(it, false);
+    }
+    const int level = min(geom(rng), MAXL-1);
+    c = max(c, level);
+    trace(level);
+    const ptr n0 = lb[0]->append(val);
+    ptr np = n0;
+    for(int i=1; i <= level; ++i) {
+      np = lb[i]->append(n0, np);
+    }
+    return make_pair(iter(n0), true);
+  }
+  iter erase(iter pos) {
+    throw "TODO";
+  }
+  size_t erase(const K& k) {
+    throw "TODO";
+  }
+  void swap(skiplist& x) {
+    throw "TODO";
+  }
+  void clear() {
 
-  ptr lb[MAXL];
-  iter lower_bound(K k) {
+  }
+  iter find(const K& k) {
+
+  }
+  int count(const K& k) {
+    iter it = lower_bound(k);
+    return it->ff == k;
+  }
+  iter lower_bound(const K& k) {
     lb[c] = &head[c];
     for (int i=c; i >= 0; --i) {
       while (lb[i]->r != &head[i] && lb[i]->r->bot->kv.ff <= k) {
@@ -95,47 +144,31 @@ struct skiplist {
     }
     return { lb[0] };
   }
-  int count(K k) {
-    iter it = lower_bound(k);
-    return it->ff == k;
-  }
-  V& operator[](K k) {
-    iter it = lower_bound(k);
-    if (it == end() || it->ff != k) {
-      const int level = min(geom(rng), MAXL-1);
-      trace(level);
-      for(int i=0; i <= level; ++i) {
-        ptr nu = lb[i]->append(k, {});
-        if (i > 0) {
-          nu->bot = lb[0]->r;
-          nu->dn = lb[i-1]->r;
-          nu->dn->up = nu;
-        }
-      }
-      c = max(c, level);
-    }
-    return it->ss;
+  iter upper_bound(const K& k) {
+    throw "TODO";
   }
 };
 
 /* REAL CODE */
 
-template <class K, class V, int SZ>
-void verbose(skiplist<K,V,SZ>& list) {
+template <class K, class T, int SZ>
+void verbose(skiplist<K,T,SZ>& list) {
   debug {
     const int levels = list.c+1;
-    static char buffer[50];
     assert(levels >= 1);
     for (int i=0; i < levels; ++i) {
       auto l0 = list.begin();
-      fprintf(stderr, "L%02d:", i);
+      cerr << "L" << i << '\t';
       for (auto it = list.begin(i); it != list.end(i); ++it, ++l0) {
         while (it.p->bot != l0.p) {
-          const int nspaces = sprintf(buffer, " %s", l0->ff.c_str());
-          fprintf(stderr, "%*s", nspaces, "");
+          stringstream ss;
+          ss << " <" << l0->ff << "> ";
+          string s = ss.str();
+          fill(all(s), ' ');
+          cerr << s;
           ++l0;
         }
-        fprintf(stderr, " %s", it->ff.c_str());
+        cerr << " <" << it->ff << "> ";
       }
       cerr << nl;
     }
@@ -145,6 +178,7 @@ void verbose(skiplist<K,V,SZ>& list) {
 void code() {
   // testing on https://codeforces.com/contest/855/problem/A
   skiplist<string,bool,20> list;
+  skiplist<int,null_type,20> test;
   int n;
   cin >> n;
   for(int i=0; i < n; ++i) {
