@@ -105,12 +105,12 @@ struct skiplist {
     }
     const int level = min(geom(rng), MAXL-1);
     c = max(c, level);
-    trace(level);
     const ptr n0 = lb[0]->append(val);
     ptr np = n0;
     for(int i=1; i <= level; ++i) {
       np = lb[i]->append(n0, np);
     }
+    ++_size;
     return make_pair(iter(n0), true);
   }
   iter erase(iter pos) {
@@ -175,10 +175,59 @@ void verbose(skiplist<K,T,SZ>& list) {
   }
 }
 
+int num_reps;
+
+void deal(auto& container, mt19937& gen) {
+  uniform_int_distribution<> kv(int(-2e9), int(2e9));
+  uniform_int_distribution<> op(0,1);
+  const auto stime = clock();
+  rep(i,0,num_reps){
+    const int k = kv(gen);
+    const int v = kv(gen);
+    switch (op(gen)) {
+      case 0:
+        container[k] = v;
+        break;
+      case 1:
+        container[k] += v;
+        break;
+    }
+  }
+  cerr << "time " << ld(clock() - stime) / CLOCKS_PER_SEC << nl;
+}
+
+int sd;
+
+void fuzz() {
+  cin >> sd >> num_reps;
+  skiplist<int,int,40> l;
+  map<int,ll> m;
+  mt19937 gen;
+  {
+    cerr << "running map\n";
+    gen.seed(sd);
+    deal(m, gen);
+  }
+  {
+    cerr << "running skiplist\n";
+    gen.seed(sd);
+    deal(l, gen);
+  }
+  assert(l.size() == m.size());
+  auto it1 = l.begin();
+  for (pii p : m) {
+    assert(p.ff == it1->ff);
+    assert(p.ss == it1->ss);
+    ++it1;
+  }
+  assert(it1 == l.end());
+  cerr << "all ok\n";
+  exit(0);
+}
+
 void code() {
   // testing on https://codeforces.com/contest/855/problem/A
   skiplist<string,bool,20> list;
-  skiplist<int,null_type,20> test;
   int n;
   cin >> n;
   for(int i=0; i < n; ++i) {
@@ -199,6 +248,7 @@ int main() { // Emily <3
   atexit([]{ cerr << "Time: " << (ld)clock() / CLOCKS_PER_SEC << nl; });
   cin.tie(0)->sync_with_stdio(0);
   cout << fixed << setprecision(12);
+  fuzz();
   code();
   return 0;
 }
