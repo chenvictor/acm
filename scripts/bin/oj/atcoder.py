@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-from utils.oj import OnlineJudge
+from oj.base import OnlineJudge
 import werkzeug
 #werkzeug.cached_property = werkzeug.utils.cached_property
 from robobrowser import RoboBrowser
 from bs4 import BeautifulSoup
 import json
-import logging
 
 LANGS = {
     'cpp': ['4003', '3003'],
@@ -16,7 +15,7 @@ def get_url(contestId, problemId):
     url = 'https://atcoder.jp/contests/{0}/tasks/{0}_{1}'.format(contestId, problemId)
     return url.format(contestId)
 
-class AtCoder(OnlineJudge):
+class Judge(OnlineJudge):
     config = '.atconfig.json'
 
     def login(self, username, token):
@@ -98,6 +97,4 @@ class AtCoder(OnlineJudge):
 #                logger.error('Error parsing ping response')
 #
 #            yield format.parse(code, None)
-
-at = AtCoder()
 

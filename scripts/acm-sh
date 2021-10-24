@@ -60,6 +60,7 @@ PS1='[ACM]:\w\$ '
 alias rem='echo is best girl'
 alias emily=rem
 alias vi='vicpp'
+alias sm='submit'
 
 # BINARIES
 
