@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from oj.base import OnlineJudge
 import werkzeug
 #werkzeug.cached_property = werkzeug.utils.cached_property

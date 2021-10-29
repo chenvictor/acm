@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from oj.base import OnlineJudge
 from robobrowser import RoboBrowser
 import requests
@@ -12,7 +11,7 @@ LANGS = {
 }
 
 # Return array of errors
-def getErrors(robo): 
+def getErrors(robo):
     return list(filter(lambda x: len(x) > 2, [err.get_text() for err in robo.select('span.error')]))
 
 class Judge(OnlineJudge):
@@ -28,7 +27,7 @@ class Judge(OnlineJudge):
             logger.debug('Gym URL')
             url = GYM
         return url.format(contestId)
-    
+
     def get_submit_url(self, contestId):
         return self.get_url(contestId) + '/submit'
 
@@ -97,7 +96,7 @@ class Judge(OnlineJudge):
         )
 
         url = 'https://codeforces.com/api/contest.status?contestId={}&from=1&count=1&handle={}'.format(contestId, self.username)
-        
+
         while True:
             self.robo.open(url)
             res = self.robo.response
