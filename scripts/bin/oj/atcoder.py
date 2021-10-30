@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-from utils.oj import OnlineJudge
+from oj.base import OnlineJudge
 import werkzeug
 #werkzeug.cached_property = werkzeug.utils.cached_property
 from robobrowser import RoboBrowser
 from bs4 import BeautifulSoup
 import json
-import logging
 
 LANGS = {
     '.cpp': ['4003', '3003'],
@@ -16,7 +14,7 @@ def get_url(contestId, problemId):
     url = 'https://atcoder.jp/contests/{0}/tasks/{0}_{1}'.format(contestId, problemId)
     return url.format(contestId)
 
-class AtCoder(OnlineJudge):
+class Judge(OnlineJudge):
     config = '.atconfig.json'
 
     def do_login(self, username, token):
@@ -52,5 +50,33 @@ class AtCoder(OnlineJudge):
         form['sourceCode'] = sourceFile.read()
         res = self.robo.submit_form(form)
 
-at = AtCoder()
+    def getSubmissionMeta(self, contestId, problemId):
+        logger.debug('Fetching submission meta')
+        url = 'https://atcoder.jp/contests/{0}/submissions/me?desc=true&f.Task={0}_{1}&orderBy=created'.format(contestId, problemId)
+        self.robo.open(url)
+        try:
+            t = self.robo.select('table')[0]
+            frow = t.findChildren('tr')[1]
+            cols = frow.findChildren('td')
+            name = cols[1].get_text()
+            return cols[4]['data-id']
+        except:
+            logger.error('Error parsing submission meta')
+
+    def ping(self, contestId, problemId):
+        pass
+#        sId = self.getSubmissionMeta(contestId, problemId)
+#        url = 'https://atcoder.jp/contests/{}/submissions/me/status/json?sids[]={}'.format(contestId, sId)
+#        logger.debug('pinging url: {}'.format(url))
+#        while True:
+#            self.robo.open(url)
+#            res = json.loads(str(self.robo.parsed))
+#            try:
+#                res = BeautifulSoup(res['Result'][sId]['Html'], 'html.parser').find('span')
+#                code = res['title']
+#                msg    = res.get_text().strip()
+#            except:
+#                logger.error('Error parsing ping response')
+#
+#            yield format.parse(code, None)
 

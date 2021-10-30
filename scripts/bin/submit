@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser, FileType
+import importlib
+
+JUDGE_ALIASES = {
+    'cf': 'codeforces',
+    'at': 'atcoder',
+}
+
+def guess_lang(filename):
+    from os.path import splitext
+    ext = splitext(filename)[1]
+    if ext.startswith('.'):
+        return ext[1:]
+    return None
+
+def main():
+    parser = ArgumentParser(prog='CLI submit', description='Submit a solution to an online judge')
+
+    parser.add_argument('file', type=FileType())
+    flags = parser.add_argument_group(title='flags')
+    parser.add_argument('-j', '--judge')
+    parser.add_argument('-c', '--contest')
+    parser.add_argument('-p', '--problem')
+    parser.add_argument('-l', '--language')
+    flags.add_argument('-s', '--skip', action='store_true', help='skip submission step')
+
+    args = parser.parse_args()
+
+    judge = args.judge
+    contest = args.contest
+    problem = args.problem
+    language = args.language or guess_lang(args.file.name)
+
+    if judge in JUDGE_ALIASES:
+        judge = JUDGE_ALIASES[judge]
+
+    try:
+        judge = importlib.import_module('oj.{}'.format(judge)).Judge()
+    except ModuleNotFoundError as e:
+        print(e)
+        print('[Error] judge not found: {}'.format(judge))
+        exit(1)
+    if args.skip:
+        print('skip')
+        return
+    judge.submit(contest, problem, language, args.file)
+    print('Submitted')
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
+        exit(1)

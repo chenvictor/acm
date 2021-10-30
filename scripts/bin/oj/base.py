@@ -61,7 +61,8 @@ class OnlineJudge(metaclass=ABCMeta):
             with open(path, 'r') as f:
                 creds = json.load(f)
         except:
-            error('failed to read config.json!')
+            print('failed to read ~/{}!'.format(self.config))
+            exit(-1)
         for key in ['username', 'token']:
             if key not in creds:
                 error('{} is missing {}'.format(self.config, key))
