@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup
 import json
 
 LANGS = {
-    'cpp': ['4003', '3003'],
-    'py': ['4047', '3510'],
+    '.cpp': ['4003', '3003'],
+    '.py': ['4047', '3510'],
 }
 
 def get_url(contestId, problemId):
@@ -17,7 +17,7 @@ def get_url(contestId, problemId):
 class Judge(OnlineJudge):
     config = '.atconfig.json'
 
-    def login(self, username, token):
+    def do_login(self, username, token):
         self.robo.open('https://atcoder.jp/login')
         form = self.robo.get_form(class_='form-horizontal')
         form['username'] = username
@@ -27,25 +27,9 @@ class Judge(OnlineJudge):
         if len(errors) > 0:
             error = errors[0]
             message = list(filter(lambda y: len(y) > 0, [x.strip() for x in error.findAll(text=True, recursive=False)]))[0]
-            logger.error('Login failed: {}'.format(message))
+            return message
 
-    def get_samples(self, contestId, problemId):
-        url = get_url(contestId, problemId)
-        self.robo.open(url)
-        if '404' in self.robo.find('title').get_text():
-            logger.error('Problem not found!')
-
-        import re
-        def _find(text):
-            res = self.robo.find_all(text=re.compile(text))
-            return [x.parent.parent.pre.text.strip() for x in res]
-
-        inputs = _find('Sample Input')
-        outputs = _find('Sample Output')
-
-        return inputs, outputs
-
-    def submit(self, contestId, problemId, lang, sourceFile):
+    def do_submit(self, contestId, problemId, lang, sourceFile):
         url = get_url(contestId, problemId)
         self.robo.open(url)
         if '404' in self.robo.find('title').get_text():
@@ -63,8 +47,7 @@ class Judge(OnlineJudge):
         if not langSet:
             logger.error('No known lang code available!')
 
-        with open(sourceFile, mode='r') as f:
-            form['sourceCode'] = f.read()
+        form['sourceCode'] = sourceFile.read()
         res = self.robo.submit_form(form)
 
     def getSubmissionMeta(self, contestId, problemId):
