@@ -1,18 +1,15 @@
 /* DEBUG */
 
 #if (DEBUG && !defined(ONLINE_JUDGE))
-template <class T> void _print(const T& t) { cerr << t << " "; }
-template <class T> void _print(const vector<T>& t) {
-  cerr << "[ "; for (auto it : t) cerr << it << " "; cerr << "]"; }
-template <class TT, size_t... I>
-void _print(const TT& tup, typename std::index_sequence<I...>) {
-  (..., (cerr << get<I>(tup) << ", ")); }
-template <class... T> void _print(tuple<T...>& t) {
-  _print(t, index_sequence_for<T...>()); }
-#define trace(x)  { cerr << ">> Line " << __LINE__ << ": " #x " = "; _print(x); cerr << nl; }
-#define debug if(1)
+template<typename T> void _print(const T& t) { cerr << t; }
+template<typename Head, typename... Tail> void _print(Head h, Tail... t) { _print(h); cerr << ","; _print(t...); }
+template<typename F, typename S> void _print(const pair<F,S> &p) { cerr << "("; _print(p.ff, p.ss); cerr << ")"; }
+template <typename... T> void _print(tuple<T...>& t) { cerr << "<"; apply([](auto&&... args){ _print(args...); }, t); cerr << ">"; }
+#define trace(...) cerr << ">> Line " << __LINE__ << ": " #__VA_ARGS__ " = "; \
+  _print(__VA_ARGS__); cerr << endl
+#define ifdebug if(1)
 #else
-#define trace(...)	{}
-#define debug if(0)
+#define trace(...)
+#define ifdebug if(0)
 #endif
 
