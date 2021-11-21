@@ -11,12 +11,18 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 #define ss second
 #define all(c) begin(c),end(c)
 #define sz(c) int(c.size())
+#define TESTCASES(t) int t=0,_TC; cin >> _TC; while(t++<_TC)
+template <typename T, typename Cmp = less<T>>
+using heap = priority_queue<T,vector<T>,Cmp>;
 
 /* BOOK CODE */
 
 /* REAL CODE */
 
 void code() {
+  TESTCASES(tc) {
+    cerr << tc << nl;
+  }
 
 }
 
