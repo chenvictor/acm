@@ -27,8 +27,11 @@ struct HVal {
   HVal operator+ (HVal o) const {int y = x+o.x; return{y - (y>=M)*M, b+o.b};}
   HVal operator- (HVal o) const {int y = x-o.x; return{y + (y< 0)*M, b-o.b};}
   HVal operator* (HVal o) const {return {(int)(1LL*x*o.x % M), b*o.b}; }
-  bool operator==(HVal o) const {return x == o.x && b == o.b; }
-  bool operator< (HVal o) const {return x == o.x ? b < o.b : x < o.x; }
+  bool operator==(HVal o) const {return tie(x,b) == tie(o.x, o.b); }
+  bool operator< (HVal o) const {return tie(x,b) <  tie(o.x, o.b); }
+  friend ostream& operator<<(ostream& os, const HVal& hv) {
+    return os << "<" << hv.x << "," << hv.b << ">";
+  }
 };
 using HashValue = HVal<int(1e9+7), HVal<>>;
 
