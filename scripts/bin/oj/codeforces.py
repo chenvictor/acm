@@ -2,8 +2,6 @@ from oj.base import OnlineJudge
 from robobrowser import RoboBrowser
 import requests
 import json
-import logging
-logger = logging.getLogger('submit-cli')
 
 LANGS = {
     'cpp': '54',
@@ -17,22 +15,22 @@ def getErrors(robo):
 class Judge(OnlineJudge):
     config = '.cfconfig.json'
 
-    def get_url(self, contestId):
+    def get_url(self):
         URL = 'https://codeforces.com/contest/{}'
         GYM = 'https://codeforces.com/gym/{}'
-        if (len(contestId) <= 4):
-            logger.debug('Contest URL')
+        if (len(self.contestId) <= 4):
+            self.logger.debug('Contest URL')
             url = URL
         else:
-            logger.debug('Gym URL')
+            self.logger.debug('Gym URL')
             url = GYM
-        return url.format(contestId)
+        return url.format(self.contestId)
 
-    def get_submit_url(self, contestId):
-        return self.get_url(contestId) + '/submit'
+    def get_submit_url(self):
+        return f'{self.get_url()}/submit'
 
-    def get_problem_url(self, contestId, problemId):
-        return '{}/problem/{}'.format(self.get_url(contestId), problemId.upper())
+    def get_problem_url(self, problemId):
+        return f'{self.get_url()}/problem/{problemId.upper()}'
 
     def lang_ok(self, lang):
         return lang in LANGS
@@ -41,18 +39,19 @@ class Judge(OnlineJudge):
         self.robo.open('https://codeforces.com/enter')
         form = self.robo.get_form(id='enterForm')
         if form is None:
-            logger.error('Login form not found')
+            self.logger.error('Login form not found')
+            exit(-1)
         form['handleOrEmail'].value = user
         form['password'].value      = token
         self.robo.submit_form(form)
         errs = getErrors(self.robo)
         if len(errs) > 0:
-            logger.debug(errs)
-            logger.error('Login error: {}'.format(errs[0]))
+            self.logger.debug(errs)
+            self.logger.error('Login error: {}'.format(errs[0]))
 
-    def get_samples(self, contestId, problemId):
-        url = self.get_problem_url(contestId, problemId)
-        logger.debug('Problem url: {}'.format(url))
+    def get_samples(self, problemId):
+        url = self.get_problem_url(problemId)
+        self.logger.debug('Problem url: {}'.format(url))
         def _get(class_):
             r = self.robo.find_all(class_=class_)
             return [x.pre.text.strip() for x in r]
@@ -63,17 +62,18 @@ class Judge(OnlineJudge):
             outs = _get('output')
             return ins, outs
         except:
-            logger.debug('Error getting samples')
+            self.logger.debug('Error getting samples')
             return [], []
 
-    def submit(self, contestId, problemId, lang, sourceFile):
+    def submit(self, sourceFile, problemId, lang):
         # submit
-        url = self.get_submit_url(contestId)
-        logger.debug('Submit url: {}'.format(url))
+        url = self.get_submit_url()
+        self.logger.debug('Submit url: {}'.format(url))
         self.robo.open(url)
         form = self.robo.get_form(class_='submit-form')
         if form is None:
-            logger.error('Submit form not found!')
+            self.logger.error('Submit form not found!')
+            exit(-1)
         form['submittedProblemIndex'] = problemId.upper()
         form['programTypeId'] = LANGS[lang]
         form['sourceFile'] = sourceFile
@@ -81,10 +81,11 @@ class Judge(OnlineJudge):
         res = self.robo.submit_form(form)
         errs = getErrors(self.robo)
         if len(errs) > 0:
-            logger.debug(errs)
-            logger.error('Submission error: {}'.format(errs[0]))
+            self.logger.debug(errs)
+            self.logger.error('Submission error: {}'.format(errs[0]))
+            exit(-1)
 
-    def ping(self, contestId, problemId):
+    def ping(self, problemId):
         from format import Format
         format = Format(
             queue_code      = 'queue',
@@ -95,7 +96,7 @@ class Judge(OnlineJudge):
             rte_code        = 'RUNTIME_ERROR'
         )
 
-        url = 'https://codeforces.com/api/contest.status?contestId={}&from=1&count=1&handle={}'.format(contestId, self.username)
+        url = 'https://codeforces.com/api/contest.status?contestId={}&from=1&count=1&handle={}'.format(self.contestId, self.username)
 
         while True:
             self.robo.open(url)

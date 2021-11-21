@@ -1,11 +1,33 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser, FileType
 import importlib
+import sys
+import logging
 
 JUDGE_ALIASES = {
     'cf': 'codeforces',
     'at': 'atcoder',
 }
+
+class ShutdownHandler(logging.StreamHandler):
+    def emit(self, record):
+        sys.exit(1)
+
+def make_logger():
+    logger = logging.getLogger(__name__)
+    formatter = logging.Formatter('[%(levelname)s] %(message)s')
+
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(formatter)
+
+    shutdown = ShutdownHandler()
+    shutdown.setLevel(logging.ERROR)
+
+    logger.addHandler(handler)
+    logger.addHandler(shutdown)
+    
+    return logger
 
 def guess_lang(filename):
     from os.path import splitext
@@ -18,33 +40,44 @@ def main():
     parser = ArgumentParser(prog='CLI submit', description='Submit a solution to an online judge')
 
     parser.add_argument('file', type=FileType())
-    flags = parser.add_argument_group(title='flags')
     parser.add_argument('-j', '--judge')
     parser.add_argument('-c', '--contest')
     parser.add_argument('-p', '--problem')
     parser.add_argument('-l', '--language')
+
+    flags = parser.add_argument_group(title='flags')
     flags.add_argument('-s', '--skip', action='store_true', help='skip submission step')
+    flags.add_argument('-v', '--verbose', action='count', default=0, help='verbose output')
 
     args = parser.parse_args()
+    logger = make_logger()
+    if args.verbose > 0:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
     judge = args.judge
     contest = args.contest
     problem = args.problem
-    language = args.language or guess_lang(args.file.name)
+    language = args.language
+
+    if judge is None:
+        logger.error('unspecified judge')
+    if contest is None:
+        logger.error('unspecified contest')
 
     if judge in JUDGE_ALIASES:
         judge = JUDGE_ALIASES[judge]
 
     try:
-        judge = importlib.import_module('oj.{}'.format(judge)).Judge()
+        judge = importlib.import_module('oj.{}'.format(judge)).Judge(logger, contest)
     except ModuleNotFoundError as e:
-        print(e)
-        print('[Error] judge not found: {}'.format(judge))
-        exit(1)
+        logger.debug(e)
+        logger.error(f'judge not found: {judge}')
     if args.skip:
         print('skip')
         return
-    judge.submit(contest, problem, language, args.file)
+    judge.submit(args.file, problem, language)
     print('Submitted')
 
 if __name__ == '__main__':

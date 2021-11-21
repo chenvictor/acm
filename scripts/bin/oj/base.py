@@ -8,7 +8,9 @@ from pathlib import Path
 
 class OnlineJudge(metaclass=ABCMeta):
 
-    def __init__(self):
+    def __init__(self, logger, contestId):
+        self.logger = logger
+        self.contestId = contestId
         creds = self.get_creds()
         self.robo = RoboBrowser(parser='html.parser')
         self.login(creds['username'], creds['token'])
@@ -27,11 +29,11 @@ class OnlineJudge(metaclass=ABCMeta):
             with open(path, 'r') as f:
                 creds = json.load(f)
         except:
-            print('failed to read ~/{}!'.format(self.config))
+            self.logger.error(f'failed to read ~/{self.config}!')
             exit(-1)
         for key in ['username', 'token']:
             if key not in creds:
-                print('{} is missing {}'.format(self.config, key))
+                self.logger.error(f'{self.config} is missing {key}')
                 exit(-1)
         return creds
 
@@ -41,7 +43,7 @@ class OnlineJudge(metaclass=ABCMeta):
 
     # Return error message, or None if success
     @abstractmethod
-    def submit(self, contestId, problemId, lang, sourceFile):
+    def submit(self, sourceFile, problemId, lang):
         pass
 
     @abstractmethod
@@ -49,7 +51,7 @@ class OnlineJudge(metaclass=ABCMeta):
         pass
 
     # Return (message, done) pair
-    def ping(self, contestId, problemId):
+    def ping(self, problemId):
         logger.error('Watch not supported!')
 
 #    def watch(self, contestId, problemId):
