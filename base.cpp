@@ -15,14 +15,28 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 template <typename T, typename Cmp = less<T>>
 using heap = priority_queue<T,vector<T>,Cmp>;
 
+// tuple i/o
+template <typename...T> istream& operator>>(istream& is, tuple<T&...> t) { return apply([&](auto&&... a) { ((is >> a), ...); }, t), is; }
+template <typename...T> ostream& operator<<(ostream& os, const tuple<T...>& t) { return apply([&](auto&& f, auto&&... r) { os << f; ((os << " " << r), ...); }, t), os; }
+// pair i/o
+istream& operator>>(istream& is, pair<auto,auto>& v) { return is >> v.ff >> v.ss; }
+ostream& operator<<(ostream& os, const pair<auto,auto>& v) { return os << v.ff << " " << v.ss; }
+
+#if (DEBUG && !defined(ONLINE_JUDGE))
+template<typename T> void _print(const T& t) { cerr << t; }
+template<typename Head, typename... Tail> void _print(Head h, Tail... t) { _print(h); cerr << ","; _print(t...); }
+#define trace(...) cerr << ">> Line " << __LINE__ << ": " #__VA_ARGS__ " = "; _print(__VA_ARGS__); cerr << endl
+#define ifdebug if(1)
+#else
+#define trace(...)
+#define ifdebug if(0)
+#endif
+
 /* BOOK CODE */
 
 /* REAL CODE */
 
 void code() {
-  TESTCASES(tc) {
-    cerr << tc << nl;
-  }
 
 }
 
