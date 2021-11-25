@@ -19,8 +19,8 @@ using heap = priority_queue<T,vector<T>,Cmp>;
 template <typename...T> istream& operator>>(istream& is, tuple<T&...> t) { return apply([&](auto&&... a) { ((is >> a), ...); }, t), is; }
 template <typename...T> ostream& operator<<(ostream& os, const tuple<T...>& t) { return apply([&](auto&& f, auto&&... r) { os << f; ((os << " " << r), ...); }, t), os; }
 // pair i/o
-istream& operator>>(istream& is, pair<auto,auto>& v) { return is >> v.ff >> v.ss; }
-ostream& operator<<(ostream& os, const pair<auto,auto>& v) { return os << v.ff << " " << v.ss; }
+template <typename...T> istream& operator>>(istream& is, pair<T&...>& v) { return is >> v.ff >> v.ss; }
+template <typename...T> ostream& operator<<(ostream& os, const pair<T...>& v) { return os << v.ff << " " << v.ss; }
 
 #if (DEBUG && !defined(ONLINE_JUDGE))
 template<typename T> void _print(const T& t) { cerr << t; }
