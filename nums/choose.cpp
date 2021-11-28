@@ -1,24 +1,12 @@
-template <int N, typename T=int>
+template <size_t N, class T=ll, bool=is_integral<T>::value>
 struct Choose {
-  T f[N];
-  constexpr Choose() {
-    f[0] = 1; rep(i,1,N) f[i] = f[i-1]*i;
-  }
-  T operator()(int n, int k) {
-    return f[n] / f[k] / f[n-k];
-  }
+  array<T,N> f,i; Choose() { f[0]=1; rep(j,1,N) f[j] = f[j-1]*j;
+    i[N-1]=f[N-1].inv(); for(int j=N; --j;) i[j-1] = i[j]*j; }
+  T operator()(int n, int k) const { return f[n] * i[k] * i[n-k]; }
 };
-
-template <int N, typename mi>
-struct ChooseMod {
-  // with inverse precomputation
-  mi f[N], inv[N];
-  constexpr ChooseMod() {
-    f[0] = inv[0] = 1;
-    rep(i,1,N) inv[i] = (f[i] = f[i-1]*i).inv();
-  }
-  mi operator()(int n, int k) {
-    return f[n] * inv[k] * inv[n-k];
-  }
+template <size_t N, class T>
+struct Choose<N,T,true> {
+  array<T,N> f; Choose() { f[0]=1; rep(j,1,N) f[j] = f[j-1]*j; }
+  T operator()(int n, int k) const { return f[n] / f[k] / f[n-k]; }
 };
 
