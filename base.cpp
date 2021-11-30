@@ -13,6 +13,8 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 #define sz(c) int(c.size())
 template <typename T, typename Cmp = less<T>>
 using heap = priority_queue<T,vector<T>,Cmp>;
+template <class T, size_t N=0>
+using arr = typename conditional<N,array<T,N>,vector<T>>::type;
 
 // tuple i/o
 template <typename...T> istream& operator>>(istream& is, tuple<T&...> t) { return apply([&](auto&&... a) { ((is >> a), ...); }, t), is; }
