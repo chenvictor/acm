@@ -11,6 +11,7 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 #define ss second
 #define all(c) begin(c),end(c)
 #define sz(c) int(c.size())
+#define SELF (*this)
 template <typename T, typename Cmp = less<T>>
 using heap = priority_queue<T,vector<T>,Cmp>;
 template <class T, size_t N=0>
