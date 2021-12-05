@@ -18,7 +18,7 @@ template <class T, size_t N=0>
 using arr = typename conditional<N,array<T,N>,vector<T>>::type;
 
 // pair i/o
-template <typename...T> istream& operator>>(istream& is, pair<T&...>& v) { return is >> v.ff >> v.ss; }
+template <typename...T> istream& operator>>(istream& is, pair<T...>& v) { return is >> v.ff >> v.ss; }
 template <typename...T> ostream& operator<<(ostream& os, const pair<T...>& v) { return os << v.ff << " " << v.ss; }
 // tuple i/o
 template <typename...T> istream& operator>>(istream& is, tuple<T&...> t) { return apply([&](auto&&... a) { ((is >> a), ...); }, t), is; }
