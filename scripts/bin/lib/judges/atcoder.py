@@ -1,6 +1,4 @@
-from oj.base import OnlineJudge
-import werkzeug
-#werkzeug.cached_property = werkzeug.utils.cached_property
+from ..judge_base import OnlineJudge
 from robobrowser import RoboBrowser
 from bs4 import BeautifulSoup
 import json

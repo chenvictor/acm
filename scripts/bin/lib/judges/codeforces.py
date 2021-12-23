@@ -1,4 +1,4 @@
-from oj.base import OnlineJudge
+from ..judge_base import OnlineJudge
 from robobrowser import RoboBrowser
 import requests
 import json
@@ -35,13 +35,13 @@ class Judge(OnlineJudge):
     def lang_ok(self, lang):
         return lang in LANGS
 
-    def login(self, user, token) -> None:
+    def login(self, username, token) -> None:
         self.robo.open('https://codeforces.com/enter')
         form = self.robo.get_form(id='enterForm')
         if form is None:
             self.logger.error('Login form not found')
             exit(-1)
-        form['handleOrEmail'].value = user
+        form['handleOrEmail'].value = username
         form['password'].value      = token
         self.robo.submit_form(form)
         errs = getErrors(self.robo)
@@ -66,7 +66,7 @@ class Judge(OnlineJudge):
             return [], []
 
     def submit(self, sourceFile, problemId, lang):
-        # submit
+        self.login(**self.get_creds())
         url = self.get_submit_url()
         self.logger.debug('Submit url: {}'.format(url))
         self.robo.open(url)

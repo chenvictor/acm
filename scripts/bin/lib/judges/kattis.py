@@ -1,4 +1,4 @@
-from oj.base import OnlineJudge
+from ..judge_base import OnlineJudge
 from cli import CLI
 from robobrowser import RoboBrowser
 
