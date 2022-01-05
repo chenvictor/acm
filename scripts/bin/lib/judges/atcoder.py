@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 import json
 
 LANGS = {
-    '.cpp': ['4003', '3003'],
-    '.py': ['4047', '3510'],
+    'cpp': ['4003', '3003'],
+    'py': ['4047', '3510'],
 }
 
 def get_url(contestId, problemId):

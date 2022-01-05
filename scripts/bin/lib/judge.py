@@ -3,6 +3,7 @@ from importlib import import_module
 ALIASES = {
     'cf': 'codeforces',
     'at': 'atcoder',
+    'ka': 'kattis',
 }
 
 def get_judge(raw, contestId, logger):
@@ -13,6 +14,7 @@ def get_judge(raw, contestId, logger):
     logger.debug(f'judge alias: {raw} => {name}')
     try:
         return import_module('lib.judges.{}'.format(name)).Judge(logger, contestId)
-    except:
+    except Exception as e:
+        logger.debug(e)
         logger.error(f'invalid judge: {name}')
 

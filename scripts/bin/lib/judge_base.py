@@ -46,9 +46,8 @@ class OnlineJudge(metaclass=ABCMeta):
     def setup(self, config):
         pass
 
-    @abstractmethod
     def get_samples(self, contestId, problemId):
-        pass
+        return []
 
     # Return (message, done) pair
     def ping(self, problemId):

@@ -1,6 +1,5 @@
 from ..judge_base import OnlineJudge
 from robobrowser import RoboBrowser
-import requests
 import json
 
 LANGS = {
