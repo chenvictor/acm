@@ -37,14 +37,13 @@ function vicpp() {
 
 # Create new folder and symlink it
 function init() {
-  readonly CUR=cur
   if [ "$#" -ne 1 ]; then
     echo "init requires exactly one argument"
     return -1
   fi
   mkdir -p $1
-  ln -sf $1 $CUR
-  cd $CUR
+  ln -Tsf $1 cur
+  cd cur
 }
 
 # PROMPT =======================================================================
