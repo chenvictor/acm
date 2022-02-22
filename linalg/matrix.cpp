@@ -6,17 +6,25 @@ struct matrix : public p {
   matrix(int d=0): matrix(d,d) {}
   T& operator()(int i, int j) { return SELF[i*m+j]; }
   const T& operator()(int i, int j) const { return SELF[i*m+j]; }
-  matrix operator*(const matrix& o) const {
-    assert(m == o.n);
-    matrix R(n,o.m);
-    rep(k,0,n) rep(i,0,m) rep(j,0,o.m) R(i,j) += SELF(i,k)*o(k,j);
+  // A*B
+  matrix operator*(const matrix& B) const {
+    assert(m == B.n);
+    matrix R(n,B.m);
+    rep(k,0,n) rep(i,0,m) rep(j,0,B.m) R(i,j) += SELF(i,k)*B(k,j);
     return R;
   }
-  valarray<T> operator*(const valarray<T>& o) const {
-    assert(m == sz(o));
+  // A*x
+  valarray<T> operator*(const valarray<T>& x) const {
+    assert(m == sz(x));
     valarray<T> res(n);
-    rep(i,0,n) rep(j,0,m) res[i] += SELF(i,j)*o[j];
+    rep(i,0,n) rep(j,0,m) res[i] += SELF(i,j)*x[j];
     return res;
+  }
+  // A^T
+  matrix transpose() const {
+    matrix t(m,n);
+    rep(i,0,m) rep(j,0,n) t(i,j) = SELF(j,i);
+    return t;
   }
 };
 
