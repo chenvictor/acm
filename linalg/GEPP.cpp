@@ -5,15 +5,14 @@
  **/
 template <class T>
 struct GEPP {
-  static T nz(T v) {
-    return abs(v) < EPS ? 0 : v;
-  }
+  static T nz(T v) { return abs(v) < EPS ? 0 : v; }
   matrix<T> M;
   GEPP(const matrix<T>& A): M(A.n,A.m+1) {
     rep(i,0,A.n) rep(j,0,A.m) M(i,j) = A(i,j);
   }
   pair<int,valarray<T>> solve(valarray<T>& b) {
     assert(M.n == sz(b));
+    // augment
     rep(i,0,M.n) M(i,M.m-1) = b[i];
     rep(i,0,min(M.n,M.m)) {
       // pivot
