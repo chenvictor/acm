@@ -14,5 +14,11 @@ namespace fancy {
    * auto it = heap.push(x);
    * heap.modify(it, y);
    **/
+
+  template <class K, class V, class Hash=hash<K>>
+  using hash_table = gp_hash_table<K,V,Hash>;
+  /** ~3x faster than unordered_map
+   *  no count() function!
+   **/
 }
 
