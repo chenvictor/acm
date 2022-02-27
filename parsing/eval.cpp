@@ -49,7 +49,6 @@ namespace Expression {
         case '/': return 2;
         case ')': return INF;
       }
-      trace(op);
       assert(false);
     }
     T calc(char op, T a, T b) {
@@ -64,37 +63,35 @@ namespace Expression {
       }
       return INF;
     }
-    Parser(const string& s): ss(s) {
-      trace(s);
-    }
+    Parser(const string& s): ss(s) { }
     T eval() {
       return rec(parse_primary());
     }
     T rec(T lhs, int min_precedence=0) {
       trace(lhs,min_precedence);
-      if (ss.peek() != EOF) {
-        char op,lookahead = (char)ss.peek();
-        if (lookahead == ')') {
+      if (ss.peek() == EOF) return lhs;
+      if (ss.peek() == ')') {
+        ss.ignore();
+        return lhs;
+      }
+      char op;
+      while (ss.peek() != EOF && precedence((char)ss.peek()) >= min_precedence) {
+        if (ss.peek() == ')') {
           ss.ignore();
-          return lhs;
+          break;
         }
-        while (precedence(lookahead) >= min_precedence) {
-          ss >> op;
-          trace(op);
-          T rhs = parse_primary();
-          trace(rhs);
-          lookahead = char(ss.peek());
-            // TODO right associativity
-          while (precedence(lookahead) > precedence(op)) {
-            if (lookahead == ')') {
-              ss.ignore();
-              break;
-            }
-            rhs = rec(rhs, precedence(op) + (precedence(lookahead) > precedence(op)));
-            lookahead = char(ss.peek());
+        ss >> op;
+        trace(op);
+        T rhs = parse_primary();
+          // TODO right associativity
+        while (ss.peek() != EOF && precedence((char)ss.peek())> precedence(op)) {
+          if (ss.peek() == ')') {
+            ss.ignore();
+            break;
           }
-          lhs = calc(op, lhs, rhs);
+          rhs = rec(rhs, precedence(op) + (precedence((char)ss.peek()) > precedence(op)));
         }
+        lhs = calc(op, lhs, rhs);
       }
       return lhs;
     }
@@ -109,7 +106,8 @@ namespace Expression {
 }
 
 void code() {
-  cout << Expression::Parser("11+1").eval() << nl;
+  string s; cin >> s;
+  cout << Expression::Parser(s).eval() << nl;
 }
 
 /* MAIN CODE */
