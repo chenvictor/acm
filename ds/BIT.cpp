@@ -1,3 +1,9 @@
+/**
+ * dynamic prefix sum
+ * Point update, query of range [0, x)
+ * tested on: https://codeforces.com/gym/100246
+ * O(lg(n)**d)
+ **/
 template <class T, class D, class ...Args>
 struct BIT {
   using SUB = BIT<T,Args...>;
