@@ -12,6 +12,7 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 
 STD="-std=c++17"
 FLAGS="-Wall -Wshadow -Wno-sign-compare -Wconversion -Wmaybe-uninitialized -Wfatal-errors"
+DEBUG_FLAGS="-ggdb -fsanitize=address,undefined -fno-omit-frame-pointer"
 # Compile c++
 function co() {
   file=$1; shift;
@@ -19,7 +20,7 @@ function co() {
 }
 function de() {
   file=$1; shift;
-	g++ -ggdb $STD ${file/.cpp}.cpp -o ${file/.cpp} -O0 $FLAGS -D DEBUG $@
+	g++ $STD ${file/.cpp}.cpp -o ${file/.cpp} -O0 $FLAGS -D DEBUG $DEBUG_FLAGS $@
 }
 
 # Open vim, default to .cpp. .py
