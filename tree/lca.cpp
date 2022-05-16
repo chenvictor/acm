@@ -1,25 +1,40 @@
-template <size_t K>
+/**
+ * Binary jumping LCA with dynamic add leaf
+ **/
+template <size_t K, int N=1<<K>
 struct LCA {
-  constexpr static int N = 1<<K;
-  int depth[N], bin[N][K];
-  LCA() { memset(bin,-1,sizeof bin); }
-  // Add 'v' as a child of 'p'
-  void add_node(int v, int p) {
-    depth[v] = depth[p]+1;
-    int *b = bin[v];
-    *b++ = p;
-    for (int k = 0; bin[p][k] != -1; ++k)
-      *b++ = p = bin[p][k];
+  int dep[N], bin[N][K];
+  int sum[N][K]; // optional, path sum queries
+  void init(int sz, int root) {
+    fill(bin[0], bin[sz], -1);
+    dep[root] = 0;
+    sum[root][0] = 0; // optional
+  }
+  void add_leaf(int p, int v, int w) {
+    dep[v] = dep[p]+1;
+    for(int k=0; p != -1; p=bin[p][k++]) {
+      bin[v][k] = p;
+      sum[v][k] = w; w += sum[p][k]; // optional
+    };
   }
   int up(int u, int d) {
-    for (int i=0; d; ++i,d/=2) {
-      if (d&1) u = bin[u][i];
+    rep(i,0,K) if (d>>i&1) {
+      u = bin[u][i];
     }
     return u;
   }
+  // optional: path up query
+  int sum_up(int u, int d) {
+    int res=0;
+    rep(i,0,K) if (d>>i&1) {
+      res += sum[u][i];
+      u = bin[u][i];
+    }
+    return res;
+  }
   int operator()(int u, int v) {
-    if (depth[u] < depth[v]) swap(u, v);
-    u = up(u,depth[u]-depth[v]);
+    if (dep[u] < dep[v]) swap(u, v);
+    u = up(u,dep[u]-dep[v]);
     if (u == v) return u;
     for (int j=K;j--;)
       if (bin[u][j] != bin[v][j]) {
