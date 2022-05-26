@@ -1,7 +1,11 @@
 /**
- * O(n) max length palindrome
+ * Description: O(n) max length palindrome
  * P[2i]   = centered at s[i]        (odd)
  * P[2i+1] = centered at s[i]-s[i+1] (even)
+ *
+ * For max palindrome:
+    int i = max_element(all(len))-len.begin();
+    s.substr(i/2-(len[i]-1)/2, len[i])
  **/
 vi manacher(const string& s) {
   vi P(sz(s)*2-1);
@@ -13,3 +17,4 @@ vi manacher(const string& s) {
   }
   return P;
 }
+
