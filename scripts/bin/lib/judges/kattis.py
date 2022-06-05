@@ -6,13 +6,11 @@ LANGS = {
     'py': 'Python 3',
 }
 
-def getURL(contestId, problemId, sourceFile):
-    # non open problems are prefixed with contestId
-    if contestId != 'open':
-        problemId = '{}.{}'.format(contestId, problemId)
+_HEADERS = {'User-Agent': 'kattis-cli-submit'}
 
-    url = 'https://{}.kattis.com/problems/{}/submit'
-    return url.format(contestId, problemId.lower())
+def getURL(contestId):
+    url = 'https://{}.kattis.com/submit'
+    return url.format(contestId)
 
 class Judge(OnlineJudge):
     config = '.kaconfig.json'
@@ -21,7 +19,7 @@ class Judge(OnlineJudge):
         login_url = 'https://{}.kattis.com/login'.format(self.contestId)
         data = {'user': username, 'token': token, 'script': 'true'}
         headers = {'User-Agent': 'kattis-cli-submit'}
-        self.robo.open(login_url, method='post', data=data, headers=headers)
+        self.robo.open(login_url, method='post', data=data, headers=_HEADERS)
         res = str(self.robo.parsed).strip().replace('\\n', '')
         if res != 'Login successful':
             self.logger.error('Login failed: {}'.format(res))
@@ -31,12 +29,19 @@ class Judge(OnlineJudge):
 
     def submit(self, sourceFile, problemId, lang):
         self.login(**self.get_creds())
-        url = getURL(self.contestId, problemId, sourceFile)
-        self.robo.open(url)
-        if self.robo.find('404: Not Found') is not None:
-            self.logger.error('Problem not found!')
-        form = self.robo.get_form(id='submit-solution-form')
-        form['sub_file[]'] = sourceFile
-        form['language'] = LANGS[lang]
-        self.robo.submit_form(form)
+        submit_url = getURL(self.contestId)
+        data = {'submit': 'true',
+                'submit_ctr': 2,
+                'language': LANGS[lang],
+                #'mainclass': mainclass,
+                'problem': problemId,
+                #'tag': tag,
+                'script': 'true'}
+        sub_files = []
+        sub_files.append(('sub_file[]',
+                          (sourceFile.name,
+                           sourceFile.read(),
+                           'application/octet-stream')))
+        self.robo.open(submit_url, method='post', data=data, files=sub_files, headers=_HEADERS)
+        print(self.robo.parsed)
 
