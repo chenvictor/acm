@@ -15,12 +15,22 @@ FLAGS="-Wall -Wshadow -Wno-sign-compare -Wconversion -Wmaybe-uninitialized -Wfat
 DEBUG_FLAGS="-ggdb -fsanitize=address,undefined -fno-omit-frame-pointer"
 # Compile c++
 function co() {
-  file=$1; shift;
-	g++ $STD ${file/.cpp}.cpp -o ${file/.cpp} -O2 $FLAGS $@
+  if [ "$#" -ne 0 ]; then
+    file=${1/.cpp}; shift;
+  fi
+  echo $file.cpp
+  g++ $STD $file.cpp -o $file -O2 $FLAGS $@
 }
 function de() {
-  file=$1; shift;
-	g++ $STD ${file/.cpp}.cpp -o ${file/.cpp} -O0 $FLAGS -D DEBUG $DEBUG_FLAGS $@
+  if [ "$#" -ne 0 ]; then
+    file=${1/.cpp}; shift;
+  fi
+  echo $file.cpp
+  g++ $STD $file.cpp -o $file -O0 $FLAGS -D DEBUG $DEBUG_FLAGS $@
+}
+function run() {
+  echo "./$file"
+  "./$file"
 }
 
 # Open vim, default to .cpp. .py
