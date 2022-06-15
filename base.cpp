@@ -14,15 +14,14 @@ const ld EPS = 1e-9, PI = acos(-1.0L);
 #define SELF (*this)
 template <typename T, typename Cmp = less<T>>
 using heap = priority_queue<T,vector<T>,Cmp>;
-template <class T, size_t N=0>
-using arr = typename conditional<N,array<T,N>,vector<T>>::type;
 
 // pair i/o
 template <typename...T> istream& operator>>(istream& is, pair<T...>& v) { return is >> v.ff >> v.ss; }
 template <typename...T> ostream& operator<<(ostream& os, const pair<T...>& v) { return os << v.ff << " " << v.ss; }
 // tuple i/o
-template <typename...T> istream& operator>>(istream& is, tuple<T&...> t) { return apply([&](auto&&... a) { ((is >> a), ...); }, t), is; }
-template <typename...T> ostream& operator<<(ostream& os, const tuple<T...>& t) { return apply([&](auto&& f, auto&&... r) { os << f; ((os << " " << r), ...); }, t), os; }
+template <typename...T> istream& operator>>(istream& is, tuple<T&...> t) { return apply([&](auto&&... args) { ((is >> args), ...); }, t), is; }
+template <typename...T> istream& operator>>(istream& is, tuple<T...>& t) { return apply([&](auto&&... args) { ((is >> args), ...); }, t), is; }
+template <typename...T> ostream& operator<<(ostream& os, const tuple<T...>& t) { return apply([&](auto&& first, auto&&... rest) { os << first; ((os << " " << rest), ...); }, t), os; }
 
 #if (DEBUG && !defined(ONLINE_JUDGE))
 #define trace(...) cerr << make_tuple(">> Line",__LINE__,#__VA_ARGS__,"=",__VA_ARGS__,"<<") << endl
