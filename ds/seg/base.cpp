@@ -1,12 +1,11 @@
-template <typename T, int K>
+template <class T, int K, int N=1<<K>
 struct segtree {
 #define IN  (l <= s && e <= r)
 #define OUT (r <= s || e <= l)
-#define MID (s+(e-s)/2)
+#define MID ((s+e)/2)
 #define LEN (e-s)
 #define L (i*2)
-#define R (i*2+1)
-  constexpr static int N = 1 << K;
+#define R (L+1)
   array<T,2*N> t;
   T& operator[](int i) { return t[i+N]; }
   void build(int i=1, int s=0, int e=N) {
@@ -21,34 +20,40 @@ struct segtree {
     flush(L,s,MID);
     flush(R,MID,e);
   }
-  T query(int l, int r, int i=1, int s=0, int e=N) {
-    if (IN) return t[i]; else if (OUT) return T();
-    t[i].prop(t[L],t[R],s,e);
-    return T(query(l, r, L, s, MID), query(l, r, R, MID, e));
+  T query(int l, int r) {
+    function<T(int,int,int)> go = [&](int i, int s, int e) {
+      if (OUT) return T{};
+      if (IN) return t[i];
+      t[i].prop(t[L],t[R],s,e);
+      return T{}.merge(go(L,s,MID),go(R,MID,e));
+    };
+    return go(1,0,N);
   }
-  template<typename Op, typename...A>
-  void upd(int l, int r, int i, int s, int e, A...args) {
-    if (OUT || (IN && Op::calc(t[i],args...,s,e))) return;
-    t[i].prop(t[L],t[R],s,e);
-    upd<Op>(l, r, L, s, MID, args...);
-    upd<Op>(l, r, R, MID, e, args...);
-    t[i].merge(t[L],t[R]);
+  template<class F, typename...A>
+  void update(F& f, int l, int r, A... args) {
+    function<void(int,int,int)> go = [&](int i, int s, int e) {
+      if (OUT) return;
+      if (IN && f(t[i],s,e,args...)) return;
+      t[i].prop(t[L],t[R],s,e);
+      go(L,s,MID);
+      go(R,MID,e);
+      t[i].merge(t[L],t[R]);
+    };
+    go(1,0,N);
   }
-  template<typename Op, typename...A>
-  void update(int l, int r, A...args){ upd<Op>(l,r,1,0,N,args...); }
-  /* Binary search - first index r where range [l, r] has value >= lim */
-  template<typename Find, typename...A>
-  pair<int,T> find(int l, int i, int s, int e, T acc, A...args) {
-    if (e <= l) return {N, T()};
-    T cur(acc, t[i]);
-    const bool ok = Find::ok(cur, args...);
-    if (!ok || LEN==1) return {ok ? s : N, cur};
-    t[i].prop(t[L],t[R],s,e);
-    auto left = find<Find>(l, L, s, MID, acc, args...);
-    if (Find::ok(left.ss, args...)) return left;
-    return find<Find>(l, R, MID, e, left.ss, args...);
+  /* Binary search: first index r where range [l, r] satisfies f, or r=N if not possible */
+  template<class F, typename...A>
+  int find(F& f, int l, A...args) {
+    function<pair<int,T>(int,int,int,T)> go = [&](int i, int s, int e, T acc) -> pair<int,T> {
+      if (e <= l) return {N, {}};
+      T cur = T{}.merge(acc, t[i]);
+      if (!f(cur, args...)) return {N,cur};
+      if (LEN==1) return {s, cur};
+      t[i].prop(t[L],t[R],s,e);
+      auto left = go(L, s, MID, acc);
+      return left.ff != N ? left : go(R,MID,e,left.ss);
+    };
+    return go(1,0,N,{}).ff;
   }
-  template<typename Find, typename...A>
-  pair<int,T> find(int l, A...args) { return find<Find>(l,1,0,N,T(),args...); }
 };
 

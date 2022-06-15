@@ -1,26 +1,19 @@
-struct Data {
-  Data(int val) { }
-  /* default null node value USED IN QUERIES so initialize!!! */
-  Data() { }
-  /* merge logic */
-  Data(const Data& l, const Data& r) { merge(l,r); }
-  void merge(const Data& l, const Data& r) {
+struct V {
+  // TODO data
+  V& merge(const V& l, const V& r) {
+    return SELF;
   }
-  /* update operations => len=1 at leaf, must return true
+  /* update operations: LEN=1 at leaf, must return true
    * false to recurse to child nodes */
-  struct update {
-    static bool calc(Data& t, int s, int e) {
-      return true;
-    }
-  };
-  void prop(Data& l, Data& r, int s, int e) {
-    /* optional lazy prop */
+  static bool update(V& t, int s, int e, int v) {
+    return 1;
   }
-  /* search operations => ok return true if condition is satisfied */
-  struct find {
-    static bool ok(const Data& t) {
-      return true;
-    }
-  };
+  /* optional lazy prop */
+  void prop(V& l, V& r, int s, int e) {
+  }
+  /* search operation: return true if condition is satisfied */
+  static bool find(const V& t) {
+    return 0;
+  }
 };
 
