@@ -11,7 +11,7 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 # FUNCTIONS ====================================================================
 
 STD="-std=c++17"
-FLAGS="-Wall -Wshadow -Wno-sign-compare -Wconversion -Wmaybe-uninitialized -Wfatal-errors"
+FLAGS="-Wall -Wshadow -Wsign-compare -Wconversion -Wmaybe-uninitialized -Wfatal-errors"
 DEBUG_FLAGS="-ggdb -fsanitize=address,undefined -fno-omit-frame-pointer"
 # Compile c++
 function co() {
@@ -49,7 +49,7 @@ function vicpp() {
 # Create new folder and symlink it
 function init() {
   if [ "$#" -ne 1 ]; then
-    echo "init requires exactly one argument"
+    echo "current folder is $(file cur)"
     return -1
   fi
   mkdir -p $1
