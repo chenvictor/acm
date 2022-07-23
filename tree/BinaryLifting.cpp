@@ -1,8 +1,8 @@
 /**
- * Binary jumping LCA with dynamic add leaf
+ * Binary Lifting
  **/
-template <size_t K, int N=1<<K>
-struct LCA {
+template <int K, int N=1<<K>
+struct BinaryLifting {
   int dep[N], bin[N][K];
   int sum[N][K]; // optional, path sum queries
   void init(int sz, int root) {
